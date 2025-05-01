@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "*.hdl": "vhdl",
+    "cmath": "cpp"
+  }
+}
