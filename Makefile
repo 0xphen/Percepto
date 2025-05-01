@@ -26,6 +26,6 @@ clean:
 rebuild: clean configure
 
 # Run tests with output
-test:
+test: build
 	@echo "🧪 Running tests..."
 	cd $(BUILD_DIR) && ctest --output-on-failure

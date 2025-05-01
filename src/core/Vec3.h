@@ -30,6 +30,9 @@ namespace percepto {
     Vec3 operator-(const Vec3& v) const { return Vec3(x - v.x, y - v.y, z - v.z); }
     Vec3 operator*(double t) const {return Vec3(t * x, t * y, t * z); }
     Vec3 operator/(double t) const {return Vec3(x/t, y/t, z/t); }
+    bool operator==(const Vec3& v) const {
+      return x == v.x && y == v.y && z == v.z;
+    }
 
     // Compound assignment
     Vec3& operator+=(const Vec3& v) {
