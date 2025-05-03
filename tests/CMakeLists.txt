@@ -2,6 +2,7 @@
 
 add_executable(percepto_tests
     TestVec3.cpp
+    TestRay.cpp
 )
 
 target_link_libraries(percepto_tests
