@@ -29,3 +29,9 @@ rebuild: clean configure
 test: build
 	@echo "🧪 Running tests..."
 	cd $(BUILD_DIR) && ctest --output-on-failure
+
+# Format all source, header, and test files using clang-format
+format:
+	@echo "🎨 Formatting all C++ source and header files recursively..."
+	find src include tests -name '*.cpp' -o -name '*.h' | xargs clang-format -i
+

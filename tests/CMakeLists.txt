@@ -10,5 +10,6 @@ target_link_libraries(percepto_tests
     percepto_lib
 )
 
+# Automatically discover all TEST() cases
 include(GoogleTest)
 gtest_discover_tests(percepto_tests)
