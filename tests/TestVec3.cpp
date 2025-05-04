@@ -4,6 +4,7 @@
 #include "TestHelpers.h"
 
 using percepto::geometry::Vec3;
+using percepto::geometry::test::GeometryTest;
 
 class Vec3Test : public ::testing::Test
 {

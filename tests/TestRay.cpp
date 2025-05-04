@@ -4,19 +4,9 @@
 #include "TestHelpers.h"
 
 using percepto::geometry::Ray, percepto::geometry::Vec3;
+using percepto::geometry::test::GeometryTest;
 
-class RayTest : public ::testing::Test
-{
- protected:
-  const Vec3 origin = Vec3(0.0, 0.0, 0.0);
-  const Vec3 direction = Vec3(1.0, 2.0, 3.0);
-  double t_min = 0.1;
-  double t_max = 100;
-
-  const Ray ray = Ray(origin, direction, t_min, t_max);
-};
-
-TEST_F(RayTest, DirectionIsNormalized)
+TEST_F(GeometryTest, RayTest_DirectionIsNormalized)
 {
   const Vec3& normalizedDirection = ray.direction();
 
@@ -26,7 +16,7 @@ TEST_F(RayTest, DirectionIsNormalized)
   EXPECT_NEAR(normalizedDirection.z, 3.0 / len, 1e-9);
 }
 
-TEST_F(RayTest, ComputesPointAlongRay)
+TEST_F(GeometryTest, ComputesPointAlongRay)
 {
   Vec3 directionTemp = ray.direction();
 
@@ -36,19 +26,23 @@ TEST_F(RayTest, ComputesPointAlongRay)
   EXPECT_VEC3_EQ(point, directionTemp * t);
 }
 
-TEST_F(RayTest, ThrowsIfDirectionIsZero)
+TEST_F(GeometryTest, RayTest_ThrowsIfDirectionIsZero)
 {
   Vec3 zeroDir(0.0, 0.0, 0.0);
 
+  // Directly test the validation function
+  EXPECT_THROW({ percepto::geometry::Ray::validateRayDirection(zeroDir); }, std::invalid_argument);
+
+  // Test that Ray constructor also throws for zero-length direction
   EXPECT_THROW({ Ray ray(origin, zeroDir, t_min, t_max); }, std::invalid_argument);
 }
 
-TEST_F(RayTest, AtZeroReturnsOrigin)
+TEST_F(GeometryTest, RayTest_AtZeroReturnsOrigin)
 {
   EXPECT_VEC3_EQ(ray.at(0.0), origin);
 }
 
-TEST_F(RayTest, AccessorsReturnCorrectValues)
+TEST_F(GeometryTest, RayTest_AccessorsReturnCorrectValues)
 {
   EXPECT_VEC3_EQ(ray.origin(), origin);
   EXPECT_DOUBLE_EQ(ray.tMin(), t_min);

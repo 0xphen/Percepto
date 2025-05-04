@@ -44,7 +44,6 @@ class Ray
 
   [[nodiscard]] Vec3 at(double t) const { return origin_ + t * direction_; }
 
- private:
   // Validates that the direction vector is not zero-length or too small
   static void validateRayDirection(const Vec3& direction)
   {
@@ -54,6 +53,7 @@ class Ray
     }
   }
 
+ private:
   Vec3 origin_;
   Vec3 direction_;
   double t_min_;
