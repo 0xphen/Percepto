@@ -9,11 +9,11 @@ using percepto::geometry::test::GeometryTest;
 TEST_F(GeometryTest, RayTest_DirectionIsNormalized)
 {
   const Vec3& normalizedDirection = ray.direction();
-
   double len = direction.length();
-  EXPECT_NEAR(normalizedDirection.x, 1.0 / len, 1e-9);
-  EXPECT_NEAR(normalizedDirection.y, 2.0 / len, 1e-9);
-  EXPECT_NEAR(normalizedDirection.z, 3.0 / len, 1e-9);
+
+  EXPECT_NEAR(normalizedDirection.x, direction.x / len, 1e-9);
+  EXPECT_NEAR(normalizedDirection.y, direction.y / len, 1e-9);
+  EXPECT_NEAR(normalizedDirection.z, direction.z / len, 1e-9);
 }
 
 TEST_F(GeometryTest, ComputesPointAlongRay)

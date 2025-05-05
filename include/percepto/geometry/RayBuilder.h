@@ -69,6 +69,11 @@ class RayBuilder
       return std::nullopt;
     }
   }
+
+  const Vec3& origin() const { return origin_; }
+  const Vec3& direction() const { return direction_; }
+  double tMin() const { return t_min_; }
+  double tMax() const { return t_max_; }
 };
 
 }  // namespace percepto::geometry
