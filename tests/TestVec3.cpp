@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-
 #include <percepto/geometry/Vec3.h>
 #include "TestHelpers.h"
 
@@ -31,6 +30,7 @@ TEST_F(Vec3Test, ConstIndexAccessTest_ReturnsCorrectComponentForValidIndex)
 
 TEST_F(Vec3Test, ConstIndexAccessTest_ThrowsOutOfRangeForInvalidIndex)
 {
+  // An index < 0 and > 2 should result in an out of range error
   EXPECT_THROW(a[-1], std::out_of_range);
   EXPECT_THROW(a[3], std::out_of_range);
 }
@@ -38,15 +38,18 @@ TEST_F(Vec3Test, ConstIndexAccessTest_ThrowsOutOfRangeForInvalidIndex)
 TEST_F(Vec3Test, MutIndexAccessTest_ReturnsCorrectComponentAndMutateForValidIndex)
 {
   Vec3 v = a;
-  v[0] = 10.0;
+  EXPECT_DOUBLE_EQ(v[0], 1.0);
 
+  v[0] = 10.0;
   EXPECT_DOUBLE_EQ(v[0], 10.0);
 }
 
 TEST_F(Vec3Test, MutIndexAccessTest_ThrowsOutOfRangeForInvalidIndex)
 {
   Vec3 v = a;
+  // An index < 0 and > 2 should result in an out of range error
   EXPECT_THROW(v[-1] = 10.0, std::out_of_range);
+  EXPECT_THROW(v[3] = 10.0, std::out_of_range);
 }
 
 TEST_F(Vec3Test, SumOperator_ReturnsNewVec3)
