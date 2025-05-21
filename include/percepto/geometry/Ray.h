@@ -5,23 +5,27 @@
 
 namespace percepto::geometry
 {
-//===----------------------------------------------------------------------===//
-//
-//  Ray.h
-//
-//  This header defines the `Ray` class.
-//  A Ray consists of an origin point and a normalized direction vector.
-//  The class provides efficient methods to compute positions along the ray.
-//
-//  This class is implemented entirely in the header with inline member
-//  functions to enable compiler optimizations and reduce function call
-//  overhead.
-//
-//  Usage example:
-//      Ray r(origin, direction);
-//      Vec3 hit_point = r.at(distance);
-//
-//===----------------------------------------------------------------------===//
+/**
+ * @file Ray.h
+ * @brief Defines the `Ray` class representing a geometric ray in 3D space.
+ *
+ * A `Ray` consists of:
+ * - An origin point (`Vec3`)
+ * - A normalized direction vector (`Vec3`)
+ *
+ * The class provides efficient methods to compute positions along the ray's path
+ * using a scalar parameter \( t \), such as:
+ *   - `at(t)` → returns the point at distance `t` along the ray.
+ *
+ * All member functions are defined inline in the header to maximize compiler
+ * optimizations and minimize function call overhead.
+ *
+ * @code
+ * Ray r(origin, direction);
+ * Vec3 hit_point = r.at(distance);
+ * @endcode
+ */
+
 class Ray
 {
  public:

@@ -74,6 +74,35 @@ TEST_F(Vec3Test, SubOperator_ReturnsNewVec3)
   EXPECT_DOUBLE_EQ(a.z, 3.0);
 }
 
+TEST_F(Vec3Test, MulOperator_ReturnsNewVec3)
+{
+  Vec3 b = a * 2;
+
+  EXPECT_DOUBLE_EQ(b.x, 2.0);
+  EXPECT_DOUBLE_EQ(b.y, 4.0);
+  EXPECT_DOUBLE_EQ(b.z, 6.0);
+
+  // Ensure `operator*` did not modify `a`
+  EXPECT_DOUBLE_EQ(a.x, 1.0);
+  EXPECT_DOUBLE_EQ(a.y, 2.0);
+  EXPECT_DOUBLE_EQ(a.z, 3.0);
+}
+
+TEST_F(Vec3Test, DotProduct_ReturnsNewVec3)
+{
+  double val = a.dot(b);
+
+  EXPECT_DOUBLE_EQ(val, 32.0);
+
+  // Ensure `dot` function did not modify `a` and `b`
+  EXPECT_DOUBLE_EQ(a.x, 1.0);
+  EXPECT_DOUBLE_EQ(a.y, 2.0);
+  EXPECT_DOUBLE_EQ(a.z, 3.0);
+  EXPECT_DOUBLE_EQ(b.x, 4.0);
+  EXPECT_DOUBLE_EQ(b.y, 5.0);
+  EXPECT_DOUBLE_EQ(b.z, 6.0);
+}
+
 // class Vec3ConstIndexAccessTest: public ::testing::TestWithParam<std::tuple<Vec3, int, double>>
 // {};
 

@@ -9,17 +9,21 @@
 namespace percepto::geometry
 {
 
-//===----------------------------------------------------------------------===//
-//
-//  RayBuilder.h
-//
-//  This class provides a safe and chainable interface to construct Ray objects.
-//  It allows setting the origin, direction, and t-range bounds explicitly.
-//
-//  RayBuilder encapsulates validation (e.g., direction must be non-zero)
-//  and supports both strict `build()` and safe `tryBuild()` construction paths.
-//
-//===----------------------------------------------------------------------===//
+/**
+ * @file RayBuilder.h
+ * @brief Provides a safe and chainable interface for constructing Ray objects.
+ *
+ * The `RayBuilder` class enables fluent construction of `Ray` instances by
+ * explicitly setting the origin, direction, and t-range bounds.
+ *
+ * It encapsulates input validation (e.g., ensuring the direction vector is non-zero)
+ * and supports both strict and safe construction paths:
+ * - `build()` performs validation and throws/asserts on invalid input
+ * - `tryBuild()` performs validation and returns an optional or fallback-safe result
+ *
+ * Designed for clear, expressive, and fail-safe ray creation in ray tracing
+ * and simulation environments.
+ */
 
 class RayBuilder
 {

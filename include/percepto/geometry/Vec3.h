@@ -5,31 +5,32 @@
 
 namespace percepto::geometry
 {
-//===----------------------------------------------------------------------===//
-//
-//  Vec3.h
-//
-//  This header defines the `Vec3` class — a simple 3D vector type supporting
-//  arithmetic, geometric operations, and indexing. It is designed for use in
-//  3D simulation, geometry, and ray tracing contexts.
-//
-//  The class supports common vector math operations, including:
-//    - Unary negation
-//    - Element-wise addition, subtraction, multiplication, and division
-//    - Scalar multiplication from both sides
-//    - Dot and cross product
-//    - Length, normalization, and indexed access
-//
-//  All methods are defined inline in the header to support maximum compiler
-//  optimization and reduce function call overhead.
-//
-//  Usage example:
-//      Vec3 a(1.0, 2.0, 3.0);
-//      Vec3 b = 2.0 * a.normalized();
-//      double d = a.dot(b);
-//      Vec3 c = a.cross(b);
-//
-//===----------------------------------------------------------------------===//
+/**
+ * @file Vec3.h
+ * @brief Defines the `Vec3` class — a simple 3D vector type.
+ *
+ * This header defines the `Vec3` class, a minimal 3D vector utility designed for use
+ * in simulation, geometry, and ray tracing contexts. All member functions are defined
+ * inline for performance and inlining opportunities.
+ *
+ * The class supports:
+ * - Unary negation
+ * - Element-wise addition, subtraction, multiplication, and division
+ * - Scalar multiplication (from both left and right)
+ * - Dot product and cross product
+ * - Vector length, normalization, and indexed component access
+ *
+ * All methods are defined inline in the header to support maximum compiler optimization
+ * and reduce function call overhead.
+ *
+ * @code
+ * Vec3 a(1.0, 2.0, 3.0);
+ * Vec3 b = 2.0 * a.normalized();
+ * double d = a.dot(b);
+ * Vec3 c = a.cross(b);
+ * @endcode
+ */
+
 class Vec3
 {
  public:
