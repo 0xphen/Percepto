@@ -1,16 +1,20 @@
 #pragma once
 
 #include <cmath>
-#include "Intersectable.h"
-#include "Ray.h"
-#include "Vec3.h"
+#include "percepto/core/Intersectable.h"
+#include "percepto/core/Ray.h"
+#include "percepto/core/Vec3.h"
+#include "percepto/math/MathUtils.h"
+
+using percepto::core::Vec3, percepto::core::Ray, percepto::core::Intersectable,
+    percepto::math::solveQuadratic;
 
 namespace percepto::geometry
 {
 class Sphere : public Intersectable<Sphere>
 {
  public:
-  Sphere(const Vec3 centre, double radius) : centre_(centre), radius_(radius) {}
+  Sphere(const Vec3& centre, double radius) : centre_(centre), radius_(radius) {}
 
   /**
    * @brief Checks whether a given ray intersects this sphere and returns the closest valid hit
@@ -46,12 +50,15 @@ class Sphere : public Intersectable<Sphere>
    *   - = 0: One tangent intersection
    *   - > 0: Two intersections (enter/exit points)
    *
+   * The roots are computed using a helper function `solveQuadratic()`, which returns the
+   * real solutions (if any) in increasing order.
+   *
    * The function returns the smallest positive t (i.e., closest visible intersection),
    * or false if no valid intersection occurs in front of the ray origin.
    *
    * @param ray     The input ray to test against the sphere.
    * @param t_hit   Output parameter. If the ray intersects, this will contain the distance (t) to
-   * the closest intersection point.
+   *                the closest intersection point.
    * @return true if the ray intersects the sphere (in front of the ray origin); false otherwise.
    */
 
@@ -67,17 +74,12 @@ class Sphere : public Intersectable<Sphere>
 
     double c = origin_to_center.dot(origin_to_center) - this->radius_ * this->radius_;
 
-    double discriminant = b * b - 4 * a * c;
+    double t0, t1;
+    auto result = solveQuadratic(a, b, c);
+    if (!result) return false;
 
-    // No real roots → no intersection
-    if (discriminant < 0.0) return false;
-
-    double sqrt_disc = std::sqrt(discriminant);
-
-    double t0 = (-b - sqrt_disc) / (2.0 * a);
-    double t1 = (-b + sqrt_disc) / (2.0 * a);
-
-    if (t0 > t1) std::swap(t0, t1);
+    t0 = result->first;
+    t1 = result->second;
 
     if (t0 < 0.0)
     {

@@ -1,4 +1,4 @@
-namespace percepto::geometry
+namespace percepto::core
 {
 
 //===----------------------------------------------------------------------===//
@@ -27,4 +27,4 @@ class Intersectable
   }
 };
 
-}  // namespace percepto::geometry
+}  // namespace percepto::core

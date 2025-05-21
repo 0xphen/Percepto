@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include <percepto/geometry/Vec3.h>
+#include <percepto/core/Vec3.h>
 #include "TestHelpers.h"
 
-using percepto::geometry::Vec3;
-using percepto::geometry::test::GeometryTest;
+using percepto::core::Vec3;
+using percepto::test::GeometryTest;
 
 class Vec3Test : public ::testing::Test
 {

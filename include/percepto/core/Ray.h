@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include "Vec3.h"
 
-namespace percepto::geometry
+namespace percepto::core
 {
 /**
  * @file Ray.h
@@ -63,4 +63,4 @@ class Ray
   double t_min_;
   double t_max_;
 };
-}  // namespace percepto::geometry
+}  // namespace percepto::core

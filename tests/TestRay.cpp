@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
-#include <percepto/geometry/Ray.h>
+#include <percepto/core/Ray.h>
 #include <iostream>
 #include "TestHelpers.h"
 
-using percepto::geometry::Ray, percepto::geometry::Vec3;
-using percepto::geometry::test::GeometryTest;
+using percepto::core::Ray, percepto::core::Vec3;
+using percepto::test::GeometryTest;
 
 TEST_F(GeometryTest, RayTest_DirectionIsNormalized)
 {
@@ -31,7 +31,7 @@ TEST_F(GeometryTest, RayTest_ThrowsIfDirectionIsZero)
   Vec3 zeroDir(0.0, 0.0, 0.0);
 
   // Directly test the validation function
-  EXPECT_THROW({ percepto::geometry::Ray::validateRayDirection(zeroDir); }, std::invalid_argument);
+  EXPECT_THROW({ percepto::core::Ray::validateRayDirection(zeroDir); }, std::invalid_argument);
 
   // Test that Ray constructor also throws for zero-length direction
   EXPECT_THROW({ Ray ray(origin, zeroDir, t_min, t_max); }, std::invalid_argument);

@@ -1,8 +1,10 @@
 #pragma once
 
 #include <gtest/gtest.h>
-#include "percepto/geometry/Ray.h"
-#include "percepto/geometry/Vec3.h"
+#include "percepto/core/Ray.h"
+#include "percepto/core/Vec3.h"
+
+using percepto::core::Ray, percepto::core::Vec3;
 
 #define EXPECT_VEC3_EQ(v1, v2)        \
   do                                  \
@@ -12,7 +14,7 @@
     EXPECT_DOUBLE_EQ((v1).z, (v2).z); \
   } while (0)
 
-namespace percepto::geometry::test
+namespace percepto::test
 {
 
 class GeometryTest : public ::testing::Test
@@ -25,4 +27,4 @@ class GeometryTest : public ::testing::Test
   const Ray ray = Ray(origin, direction, t_min, t_max);
 };
 
-}  // namespace percepto::geometry::test
+}  // namespace percepto::test

@@ -6,7 +6,7 @@
 #include "Ray.h"
 #include "Vec3.h"
 
-namespace percepto::geometry
+namespace percepto::core
 {
 
 /**
@@ -80,4 +80,4 @@ class RayBuilder
   double tMax() const { return t_max_; }
 };
 
-}  // namespace percepto::geometry
+}  // namespace percepto::core

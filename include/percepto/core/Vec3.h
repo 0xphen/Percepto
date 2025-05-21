@@ -3,7 +3,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace percepto::geometry
+namespace percepto::core
 {
 /**
  * @file Vec3.h
@@ -135,4 +135,4 @@ inline Vec3 operator*(double t, const Vec3& v)
 {
   return v * t;
 }
-}  // namespace percepto::geometry
+}  // namespace percepto::core

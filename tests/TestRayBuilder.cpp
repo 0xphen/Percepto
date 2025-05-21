@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
-#include <percepto/geometry/RayBuilder.h>
-#include <percepto/geometry/Vec3.h>
+#include <percepto/core/RayBuilder.h>
+#include <percepto/core/Vec3.h>
 #include "TestHelpers.h"
 
-using percepto::geometry::RayBuilder, percepto::geometry::Vec3, percepto::geometry::Ray;
-using percepto::geometry::test::GeometryTest;
+using percepto::core::RayBuilder, percepto::core::Vec3, percepto::core::Ray;
+using percepto::test::GeometryTest;
 
 TEST_F(GeometryTest, RayBuilder_BuildsRayWithCorrectParams)
 {
