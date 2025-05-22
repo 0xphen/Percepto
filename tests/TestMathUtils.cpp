@@ -39,10 +39,20 @@ TEST_F(MathTest, SolveQuadratic_Variants)
 TEST_F(MathTest, ComputeQuadraticCoefficients_Variants)
 {
   {
-    SCOPED_TRACE("Tangent root");
+    SCOPED_TRACE("Happy path: ray origin outside sphere, intersects at two points");
+
     Sphere sphere(sphere_centre, sphere_radius);
     Vec3 ray_direction = origin - sphere_centre;
     Ray ray(origin, ray_direction, t_min, t_max);
+
+    // This test represents the common "happy path" scenario:
+    // - The ray origin is outside the sphere
+    // - The ray is directed toward the sphere
+    // - The ray intersects the sphere at two points
+    //
+    // In this case, the quadratic equation a·t² + b·t + c = 0 has two real roots
+    // (i.e., discriminant > 0). Here, we're not solving for the roots but verifying
+    // that the computed coefficients a, b, and c are correct for this configuration.
 
     QuadraticCoefficients coef = computeQuadraticCoefficients(ray, sphere);
 
@@ -52,24 +62,58 @@ TEST_F(MathTest, ComputeQuadraticCoefficients_Variants)
   }
 
   {
-    SCOPED_TRACE("Orthogonal Direction");
+    SCOPED_TRACE("Ray direction orthogonal to (origin - center)");
+
     Vec3 sphere_center = Vec3(0, 5, 0);
-    Vec3 ray_direction = Vec3(1, 0, 0);  // Orthogonal to (0, -5, 0)
+    Vec3 ray_direction = Vec3(1, 0, 0);  // Along X-axis
+
+    // origin = (0, 0, 0) from the fixture
+    // Vector from sphere center to ray origin = origin - center = (0, -5, 0)
+    // Ray direction = (1, 0, 0)
+    //
+    // These two vectors are perpendicular:
+    // (0, -5, 0) • (1, 0, 0) = 0
+    //
+    // So, b = 2 * (origin - center) • direction = 0
+    // This test confirms that when the ray direction is perpendicular to
+    // the vector from sphere center to origin, coefficient `b` is zero.
+
     Ray ray(origin, ray_direction, t_min, t_max);
     Sphere sphere(sphere_center, sphere_radius);
 
     QuadraticCoefficients coef = computeQuadraticCoefficients(ray, sphere);
-    EXPECT_NEAR(coef.b, 0.0, 1e-9);  // Dot product should be zero
+
+    EXPECT_NEAR(coef.b, 0.0, 1e-9);
+  }
+
+  {
+    SCOPED_TRACE("Ray origin inside sphere");
+
+    Vec3 sphere_center = Vec3(5, 2, 12);
+    Vec3 ray_origin(3, 1, 11);  // Ray origin lies inside the sphere
+
+    Vec3 ray_direction = ray_origin - sphere_center;
+    Ray ray(ray_origin, ray_direction, t_min, t_max);
+
+    Sphere sphere(sphere_center, sphere_radius);
+
+    QuadraticCoefficients coef = computeQuadraticCoefficients(ray, sphere);
+
+    // When the ray origin is inside the sphere,
+    // the squared distance ||origin - center||² is less than radius²,
+    // so the c coefficient is always negative.
+    ASSERT_LT(coef.c, 0);  // c = ||o - c||² - r² = 6 - 25 = -19 → always negative inside sphere
   }
 }
 
 // sphere_centre = 5, 2, 12
-// ray_origin = 0, 0, 0
+// ray_origin = 3, 1, 11
 // sphere_radius = 5
-// origin_to_centre =  ray_origin - sphere_centre = -5, -2, -12
+// origin_to_centre =  ray_origin - sphere_centre = -2, -1, -1
 // ray_direction = origin_to_centre
-// ray_direction_magnitude = sqrt(-5*-5 + -2*-2 + -12*-12) = 13.152946438
-// ray_direction_normalized = (-5/13.152946438, -2/13.152946438, -12/13.152946438) = (-0.3801429606,
-// -0.1520571843, -0.9123431055) a = ray_direction_normalized.dot(ray_direction_normalized) = ~
-// 0.999999 b = 2 * origin_to_centre.dot(ray_direction_normalized) = 26.3058928752 c =
-// origin_to_center.dot(origin_to_center) - sphere_radius * sphere_radius = 173 - 4 = 148
+// ray_direction_magnitude = sqrt(-2*-2 + -1*-1 + -1*-1) = 2.4494897428
+// ray_direction_normalized = (-2/2.4494897428, -1/2.4494897428, -1/2.4494897428) = (-0.8164965809,
+// -0.4082482905, -0.4082482905) a = ray_direction_normalized.dot(ray_direction_normalized) = ~
+// 1.00000000000687
+// b = 2 * origin_to_centre.dot(ray_direction_normalized) = 4.8989794856
+// c = origin_to_center.dot(origin_to_center) - sphere_radius * sphere_radius = 6 - 25 = -19
