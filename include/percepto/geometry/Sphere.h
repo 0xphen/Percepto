@@ -6,15 +6,18 @@
 #include "percepto/core/Vec3.h"
 #include "percepto/math/MathUtils.h"
 
-using percepto::core::Vec3, percepto::core::Ray, percepto::core::Intersectable,
-    percepto::math::solveQuadratic;
+using percepto::core::Vec3, percepto::core::Ray;
+using namespace percepto::math;
 
 namespace percepto::geometry
 {
-class Sphere : public Intersectable<Sphere>
+class Sphere : public percepto::core::Intersectable<Sphere>
 {
  public:
   Sphere(const Vec3& centre, double radius) : centre_(centre), radius_(radius) {}
+
+  const Vec3& centre() const { return centre_; }
+  const double radius() const { return radius_; }
 
   /**
    * @brief Checks whether a given ray intersects this sphere and returns the closest valid hit
@@ -61,21 +64,13 @@ class Sphere : public Intersectable<Sphere>
    *                the closest intersection point.
    * @return true if the ray intersects the sphere (in front of the ray origin); false otherwise.
    */
-
   [[nodiscard]]
   bool intercept(const Ray& ray, double& t_hit) const
   {
-    Vec3 ray_direction = ray.direction();
-    Vec3 origin_to_center = ray.origin() - this->centre_;
-
-    double a = ray_direction.dot(ray_direction);  // Normally 1 if direction is normalized
-
-    double b = 2.0 * origin_to_center.dot(ray_direction);
-
-    double c = origin_to_center.dot(origin_to_center) - this->radius_ * this->radius_;
+    QuadraticCoefficients q_coef = computeQuadraticCoefficients(ray, *this);
 
     double t0, t1;
-    auto result = solveQuadratic(a, b, c);
+    auto result = solveQuadratic(q_coef.a, q_coef.b, q_coef.c);
     if (!result) return false;
 
     t0 = result->first;

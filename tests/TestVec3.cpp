@@ -3,7 +3,7 @@
 #include "TestHelpers.h"
 
 using percepto::core::Vec3;
-using percepto::test::GeometryTest;
+using percepto::test::CoreTest;
 
 class Vec3Test : public ::testing::Test
 {

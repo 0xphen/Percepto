@@ -5,9 +5,9 @@
 #include "TestHelpers.h"
 
 using percepto::core::Ray, percepto::geometry::Sphere, percepto::core::Vec3, percepto::core::Ray;
-using percepto::test::GeometryTest;
+using percepto::test::CoreTest;
 
-TEST_F(GeometryTest, SphereTest_RaySphereIntersection)
+TEST_F(CoreTest, SphereTest_RaySphereIntersection)
 {
   Vec3 centre(10.0, 12.0, 7.0);
   double radius = 5.0;

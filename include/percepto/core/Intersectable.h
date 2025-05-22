@@ -1,17 +1,19 @@
 namespace percepto::core
 {
 
-//===----------------------------------------------------------------------===//
-// Intersectable (CRTP Interface)
-//
-// A compile-time polymorphic base class for geometric objects that can be
-// intersected by a ray. This uses the Curiously Recurring Template Pattern (CRTP)
-// to allow derived classes (e.g., Sphere, Triangle, Plane) to implement their own
-// `intercept` method without incurring runtime overhead.
-//
-// We use this pattern to enhance performance by eliminating vtables and enabling
-// full compile-time dispatch, inlining, and optimization.
-//===----------------------------------------------------------------------===//
+/**
+ * @brief Intersectable (CRTP Interface)
+ *
+ * A compile-time polymorphic base class for geometric objects that can be
+ * intersected by a ray. This interface uses the Curiously Recurring Template
+ * Pattern (CRTP) to allow derived classes (e.g., Sphere, Triangle, Plane) to
+ * implement their own `intercept` method without incurring runtime overhead.
+ *
+ * CRTP enables compile-time polymorphism, which allows:
+ * - Elimination of virtual tables (vtables)
+ * - Full compile-time dispatch
+ * - Aggressive inlining and compiler optimization
+ */
 
 template <typename Derived>
 class Intersectable
@@ -21,9 +23,9 @@ class Intersectable
   // using CRTP. Returns true if the ray hits the object, and writes the hit
   // distance to `t`.
   [[nodiscard]]
-  bool intercept(const Ray& ray, double& t) const
+  bool intercept(const Ray& ray, double& t_hit) const
   {
-    return static_cast<const Derived*>(this)->intercept(ray, t);
+    return static_cast<const Derived*>(this)->intercept(ray, t_hit);
   }
 };
 

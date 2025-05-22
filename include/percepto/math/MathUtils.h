@@ -1,36 +1,57 @@
 #pragma once
 
-#include "cmath"
-#include "optional"
-#include "utility"
+#include <cmath>
+#include <optional>
+#include <utility>
+
+#include "percepto/core/Ray.h"
+#include "percepto/core/Vec3.h"
+
+namespace percepto::geometry
+{
+// Forward declaration to avoid circular dependency.
+// The full definition of Sphere is not needed in this header.
+class Sphere;
+}  // namespace percepto::geometry
 
 namespace percepto::math
 {
+
 /**
- * @brief Solves a quadratic equation of the form a·t² + b·t + c = 0 and returns the real roots, if
- * any.
+ * @brief Struct representing the coefficients of a quadratic equation:
+ *        a·t² + b·t + c = 0
+ */
+struct QuadraticCoefficients
+{
+  double a, b, c;
+};
+
+/**
+ * @brief Computes the quadratic coefficients for the ray-sphere intersection equation.
  *
- * This function computes the real roots of a quadratic equation using the discriminant method.
- * If the equation has real roots, they are returned in a std::pair<double, double> ordered such
- * that the first element is the smaller root and the second is the larger root.
+ * This is derived from substituting the ray equation R(t) = o + t·d into the
+ * sphere's equation ‖p - c‖² = r², where:
+ *   - o is the ray origin,
+ *   - d is the ray direction,
+ *   - c is the sphere center,
+ *   - r is the sphere radius.
+ *
+ * @param ray     The ray to test.
+ * @param sphere  The sphere to test against.
+ * @return QuadraticCoefficients with a, b, c values for the intersection test.
+ */
+QuadraticCoefficients computeQuadraticCoefficients(const percepto::core::Ray& ray,
+                                                   const percepto::geometry::Sphere& sphere);
+
+/**
+ * @brief Solves the quadratic equation a·t² + b·t + c = 0 for real roots.
  *
  * @param a Coefficient of t²
  * @param b Coefficient of t
  * @param c Constant term
- * @return std::optional<std::pair<double, double>> containing the roots if they exist,
- *         or std::nullopt if the discriminant is negative (no real solutions).
+ * @return An optional pair containing the two real roots (sorted ascending),
+ *         or std::nullopt if the discriminant is negative (no real roots).
  */
-inline std::optional<std::pair<double, double>> solveQuadratic(double a, double b, double c)
-{
-  double disc = b * b - 4 * a * c;
-  if (disc < 0.0) return std::nullopt;
+std::optional<std::pair<double, double>> solveQuadratic(double a, double b, double c);
 
-  double sqrt_disc = std::sqrt(disc);
-  double t0 = (-b - sqrt_disc) / (2 * a);
-  double t1 = (-b + sqrt_disc) / (2 * a);
-
-  if (t0 > t1) std::swap(t0, t1);
-
-  return std::make_pair(t0, t1);
-}
 }  // namespace percepto::math
