@@ -102,18 +102,7 @@ TEST_F(MathTest, ComputeQuadraticCoefficients_Variants)
     // When the ray origin is inside the sphere,
     // the squared distance ||origin - center||² is less than radius²,
     // so the c coefficient is always negative.
-    ASSERT_LT(coef.c, 0);  // c = ||o - c||² - r² = 6 - 25 = -19 → always negative inside sphere
+    ASSERT_LT(coef.c,
+              0);  // c = ||origin - center||² - r² = 6 - 25 = -19 → always negative inside sphere
   }
 }
-
-// sphere_centre = 5, 2, 12
-// ray_origin = 3, 1, 11
-// sphere_radius = 5
-// origin_to_centre =  ray_origin - sphere_centre = -2, -1, -1
-// ray_direction = origin_to_centre
-// ray_direction_magnitude = sqrt(-2*-2 + -1*-1 + -1*-1) = 2.4494897428
-// ray_direction_normalized = (-2/2.4494897428, -1/2.4494897428, -1/2.4494897428) = (-0.8164965809,
-// -0.4082482905, -0.4082482905) a = ray_direction_normalized.dot(ray_direction_normalized) = ~
-// 1.00000000000687
-// b = 2 * origin_to_centre.dot(ray_direction_normalized) = 4.8989794856
-// c = origin_to_center.dot(origin_to_center) - sphere_radius * sphere_radius = 6 - 25 = -19

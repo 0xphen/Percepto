@@ -78,8 +78,10 @@ class Sphere : public percepto::core::Intersectable<Sphere>
 
     if (t0 < 0.0)
     {
+      // If the nearest root is negative, try the farther root
       t0 = t1;
-      if (t0 < 0.0) return false;  // both intersections are behind the ray
+      if (t0 < ray.tMin() || t0 > ray.tMax())
+        return false;  // No valid intersection in [tMin, tMax]
     }
 
     t_hit = t0;
