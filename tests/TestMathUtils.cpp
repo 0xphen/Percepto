@@ -1,9 +1,10 @@
 #include <gtest/gtest.h>
+
 #include "TestHelpers.h"
-#include "percepto/core/Ray.h"
-#include "percepto/core/Vec3.h"
-#include "percepto/geometry/Sphere.h"
-#include "percepto/math/MathUtils.h"
+#include "percepto/core/ray.h"
+#include "percepto/core/vec3.h"
+#include "percepto/geometry/sphere.h"
+#include "percepto/math/math_utils.h"
 
 using percepto::geometry::Sphere, percepto::core::Vec3;
 using namespace percepto::math;

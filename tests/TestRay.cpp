@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
-#include <percepto/core/Ray.h>
 #include <iostream>
+
+#include <percepto/core/ray.h>
 #include "TestHelpers.h"
 
 using percepto::core::Ray, percepto::core::Vec3;

@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
-#include <percepto/core/Ray.h>
-#include <percepto/core/Vec3.h>
-#include <percepto/geometry/Sphere.h>
 #include "TestHelpers.h"
+
+#include <percepto/core/ray.h>
+#include <percepto/core/vec3.h>
+#include <percepto/geometry/sphere.h>
 
 using percepto::core::Ray, percepto::geometry::Sphere, percepto::core::Vec3, percepto::core::Ray;
 using percepto::test::GeometryTest;
@@ -24,7 +25,7 @@ TEST_F(GeometryTest, SphereTest_RaySphereIntersection)
     bool hit = sphere.intercept(ray, t_hit);
     ASSERT_TRUE(hit) << "Expected ray to intersect the sphere, but no hit was detected.";
 
-    // ✅ Validate the intersection distance (t_hit)
+    // Validate the intersection distance (t_hit)
     // Explanation:
     // - Sphere center = (5, 2, 12)
     // - Ray origin = (0, 0, 0)
@@ -34,7 +35,7 @@ TEST_F(GeometryTest, SphereTest_RaySphereIntersection)
     EXPECT_NEAR(t_hit, 8.152946438562545, 1e-9)
         << "Unexpected t_hit value. This indicates the intersection distance is incorrect.";
 
-    // ✅ Validate that the computed hit point lies exactly on the sphere's surface
+    // Validate that the computed hit point lies exactly on the sphere's surface
     Vec3 hit_point = ray.at(t_hit);
     double distance_to_center = (hit_point - sphere_centre).length();
     EXPECT_NEAR(distance_to_center, sphere_radius, 1e-6)
@@ -75,18 +76,18 @@ TEST_F(GeometryTest, SphereTest_RaySphereIntersection)
 
     ASSERT_TRUE(hit) << "Expected a tangent hit, but got no intersection.";
 
-    // ✅ Check: the hit point lies exactly on the sphere's surface
+    // Check: the hit point lies exactly on the sphere's surface
     Vec3 hit_point = ray.at(t_hit);
     double d = (hit_point - center).length();
     EXPECT_NEAR(d, radius, 1e-6)
         << "Tangent hit point is not exactly on the surface of the sphere.";
 
-    // ✅ Verify discriminant == 0 for a tangent hit
+    // Verify discriminant == 0 for a tangent hit
     // In ray-sphere intersection, we solve a quadratic equation:
     //    a*t^2 + b*t + c = 0
     // The discriminant (b² - 4ac) tells us:
     // - If < 0 → no hit
-    // - If = 0 → **tangent hit** (1 solution)
+    // - If = 0 → tangent hit (1 solution)
     // - If > 0 → 2 hits (entry and exit)
     //
     // This case is geometrically tangent, so discriminant should be 0.
@@ -97,15 +98,3 @@ TEST_F(GeometryTest, SphereTest_RaySphereIntersection)
                                 << disc;
   }
 }
-
-// sphere_centre = 5, 2, 12
-// ray_origin = 0, 0, 0
-// sphere_radius = 5
-// origin_to_centre = ray_origin - sphere_centre = -5, -2, -12
-// ray_direction = origin_to_centre
-// ray_direction_magnitude = sqrt(5*5 + 2*2 + 12*12) = 13.152946438
-// ray_direction_normalized = (-5/13.152946438, -2/13.152946438, -12/13.152946438) = (-0.3801429606,
-// -0.1520571843, -0.9123431055) a = ray_direction_normalized.dot(ray_direction_normalized) = 1
-// b = 2 * origin_to_centre.dot(ray_direction_normalized) = -10*-0.3801429606 + -4*-0.1520571843,
-// -24*-0.9123431055 = 26.3058928752 c = origin_to_center.dot(origin_to_center) - sphere_radius *
-// sphere_radius = 173 - 25 = 148

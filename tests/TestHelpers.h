@@ -1,8 +1,9 @@
 #pragma once
 
 #include <gtest/gtest.h>
-#include "percepto/core/Ray.h"
-#include "percepto/core/Vec3.h"
+
+#include "percepto/core/ray.h"
+#include "percepto/core/vec3.h"
 
 using percepto::core::Ray, percepto::core::Vec3;
 

@@ -2,7 +2,8 @@
 
 #include <memory>
 #include <vector>
-#include "percepto/geometry/Sphere.h"
+
+#include "percepto/geometry/sphere.h"
 
 namespace percepto::geometry
 {

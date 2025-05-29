@@ -1,10 +1,11 @@
 #pragma once
 
 #include <cmath>
-#include "percepto/core/Intersectable.h"
-#include "percepto/core/Ray.h"
-#include "percepto/core/Vec3.h"
-#include "percepto/math/MathUtils.h"
+
+#include "percepto/core/intersectable.h"
+#include "percepto/core/ray.h"
+#include "percepto/core/vec3.h"
+#include "percepto/math/math_utils.h"
 
 using percepto::core::Vec3, percepto::core::Ray;
 using namespace percepto::math;

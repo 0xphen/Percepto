@@ -4,8 +4,8 @@
 #include <optional>
 #include <utility>
 
-#include "percepto/core/Ray.h"
-#include "percepto/core/Vec3.h"
+#include "percepto/core/ray.h"
+#include "percepto/core/vec3.h"
 
 namespace percepto::geometry
 {

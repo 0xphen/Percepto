@@ -1,7 +1,8 @@
 #pragma once
 
 #include <stdexcept>
-#include "Vec3.h"
+
+#include "vec3.h"
 
 namespace percepto::core
 {

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
-#include <percepto/core/Vec3.h>
+
+#include <percepto/core/vec3.h>
 #include "TestHelpers.h"
 
 using percepto::core::Vec3;

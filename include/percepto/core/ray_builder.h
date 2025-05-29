@@ -3,8 +3,9 @@
 #include <iostream>
 #include <limits>
 #include <optional>
-#include "Ray.h"
-#include "Vec3.h"
+
+#include "ray.h"
+#include "vec3.h"
 
 namespace percepto::core
 {
