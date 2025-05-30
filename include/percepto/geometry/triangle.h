@@ -3,6 +3,7 @@
 #include "percepto/core/intersectable.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
+#include "percepto/math/intersection/moller_trumbore.h"
 
 using percepto::core::Vec3, percepto::core::Ray;
 
