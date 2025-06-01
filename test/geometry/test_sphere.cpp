@@ -2,10 +2,11 @@
 
 #include "test_helpers.h"
 #include <percepto/core/ray.h>
+#include <percepto/core/types.h>
 #include <percepto/core/vec3.h>
 #include <percepto/geometry/sphere.h>
 
-using percepto::core::Ray, percepto::geometry::Sphere, percepto::core::Vec3, percepto::core::Ray;
+using percepto::core::Ray, percepto::geometry::Sphere, percepto::core::Vec3, percepto::core::Ray, percepto::core::HitRecord;
 using percepto::test::GeometryTest;
 
 TEST_F(GeometryTest, SphereTest_RaySphereIntersection)
@@ -19,10 +20,10 @@ TEST_F(GeometryTest, SphereTest_RaySphereIntersection)
     Vec3 ray_direction = (sphere_centre - origin).normalized();
     Ray ray(origin, ray_direction, t_min, t_max);
 
-    double t_hit;
+    HitRecord hit_record;
 
     // Perform ray-sphere intersection
-    bool hit = sphere.intercept(ray, t_hit);
+    bool hit = sphere.intersect(ray, hit_record);
     ASSERT_TRUE(hit) << "Expected ray to intersect the sphere, but no hit was detected.";
 
     // Validate the intersection distance (t_hit)
@@ -32,12 +33,12 @@ TEST_F(GeometryTest, SphereTest_RaySphereIntersection)
     // - Ray direction = normalized(center - origin)
     // - Using the ray-sphere equation: ||O + tD - C||^2 = r^2
     // - The solution yields t_hit ≈ 8.152946438562545
-    EXPECT_NEAR(t_hit, 8.152946438562545, 1e-9)
+    EXPECT_VEC3_EQ(hit_record.point, ray.at(hit_record.t));
+    EXPECT_NEAR(hit_record.t, 8.152946438562545, 1e-9)
         << "Unexpected t_hit value. This indicates the intersection distance is incorrect.";
 
     // Validate that the computed hit point lies exactly on the sphere's surface
-    Vec3 hit_point = ray.at(t_hit);
-    double distance_to_center = (hit_point - sphere_centre).length();
+    double distance_to_center = (hit_record.point - sphere_centre).length();
     EXPECT_NEAR(distance_to_center, sphere_radius, 1e-6)
         << "Hit point does not lie on the sphere's surface — distance to center != radius.";
   }
@@ -49,8 +50,8 @@ TEST_F(GeometryTest, SphereTest_RaySphereIntersection)
     Ray ray(origin, direction, 0.1, 100.0);
     Sphere sphere(sphere_centre, sphere_radius);
 
-    double t_hit;
-    bool hit = sphere.intercept(ray, t_hit);
+    HitRecord hit_record;
+    bool hit = sphere.intersect(ray, hit_record);
 
     ASSERT_FALSE(hit) << "Expected ray to miss sphere, but it hit.";
   }
@@ -71,14 +72,13 @@ TEST_F(GeometryTest, SphereTest_RaySphereIntersection)
     Sphere sphere(center, radius);
     Ray ray(origin, direction, 0.1, 100.0);
 
-    double t_hit;
-    bool hit = sphere.intercept(ray, t_hit);
+    HitRecord hit_record;
+    bool hit = sphere.intersect(ray, hit_record);
 
     ASSERT_TRUE(hit) << "Expected a tangent hit, but got no intersection.";
 
     // Check: the hit point lies exactly on the sphere's surface
-    Vec3 hit_point = ray.at(t_hit);
-    double d = (hit_point - center).length();
+    double d = (hit_record.point - center).length();
     EXPECT_NEAR(d, radius, 1e-6)
         << "Tangent hit point is not exactly on the surface of the sphere.";
 

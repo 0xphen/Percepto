@@ -3,42 +3,46 @@
 #include <optional>
 
 #include "percepto/core/ray.h"
+#include "percepto/core/types.h"
 #include "percepto/core/vec3.h"
 
-using percepto::core::Ray, percepto::core::Vec3;
+using percepto::core::Ray, percepto::core::Vec3, percepto::core::TriangleHitResult;
 
 namespace percepto::math::intersection
 {
-struct Hit
-{
-  double t, u, v;
-};
 
 inline constexpr double EPSILON = 1e-6;
 
 /**
- * Performs the Möller–Trumbore ray–triangle intersection test.
+ * @brief   Compute ray–triangle intersection using the Möller–Trumbore algorithm (back-face culling
+ * enabled).
  *
- * Given triangle vertices v0, v1, v2 and a ray (origin O, direction D),
- * computes whether the ray hits the triangle. If it does, returns a Hit
- * containing:
- *   - t: distance along the ray to the intersection point
- *   - u, v: barycentric coordinates within the triangle
+ * Given three triangle vertices `v0, v1, v2` (assumed CCW for front face) and a `ray`, this
+ * function returns a `Hit` containing `(t, u, v)` if the ray intersects the triangle’s front face.
+ * If the ray is nearly parallel to the triangle, strikes its back face, or the triangle is
+ * degenerate, the function returns `std::nullopt`.
  *
- * The algorithm:
- * 1. Compute two edges of the triangle: edgeAB = v1 - v0, edgeAC = v2 - v0.
- * 2. Translate the ray origin into the triangle’s local frame: originToA = O - v0.
- * 3. Build a perpendicular vector p = D × edgeAC and use it to
- *    test for parallelism via det = edgeAB · p. Early out if det is near zero.
- * 4. Compute u = (originToA · p) / det and reject if u lies outside [0,1].
- * 5. Build q = originToA × edgeAB, then compute v = (D · q) / det and reject
- *    if v < 0 or u + v > 1 (outside triangle).
- * 6. Finally, compute t = (edgeAC · q) / det; reject if t is negative or too close.
+ * Algorithm details:
+ * 1. Compute edges: `edge1 = v1 – v0`, `edge2 = v2 – v0`.
+ * 2. Form `p = ray.direction() × edge2`.
+ * 3. Compute determinant `det = edge1 · p`.
+ *    - If `|det| < EPSILON`, ray is parallel or triangle is degenerate → no hit.
+ *    - If `det < EPSILON`, ray is hitting the back face (or nearly parallel from the other side) →
+ * no hit.
+ * 4. Compute `invDet = 1/det`.
+ * 5. Compute barycentric `u = ( (ray.origin() – v0) · p ) * invDet`. If `u < 0 || u > 1`, no hit.
+ * 6. Compute `q = (ray.origin() – v0) × edge1`.
+ * 7. Compute barycentric `v = ( ray.direction() · q ) * invDet`. If `v < 0 || (u + v) > 1`, no hit.
+ * 8. Compute `t = ( edge2 · q ) * invDet`. If `t < EPSILON` (behind origin or too close), no hit.
+ * 9. Otherwise, return `Hit{t, u, v}`.
  *
- * This implementation only stores vertex positions—no precomputed normals or plane
- * equations—making it memory-efficient and fast.
+ * @param[in]  v0, v1, v2   The triangle’s three vertices (wound CCW on the front face).
+ * @param[in]  ray         The ray to test (origin, direction).
+ * @return `std::optional<Hit>` containing `(t, u, v)` if a valid front-face intersection occurs;
+ *         `std::nullopt` otherwise.
  */
-std::optional<Hit> moller_trumbore(const Vec3& v0, const Vec3& v1, const Vec3& v2, const Ray& ray)
+std::optional<TriangleHitResult> moller_trumbore(const Vec3& v0, const Vec3& v1, const Vec3& v2,
+                                                 const Ray& ray)
 {
   Vec3 edgeAB = v1 - v0;  // A→B
   Vec3 edgeAC = v2 - v0;  // A→C
@@ -65,6 +69,6 @@ std::optional<Hit> moller_trumbore(const Vec3& v0, const Vec3& v1, const Vec3& v
   double t = edgeAC.dot(q) * invDet;
   if (t < EPSILON) return std::nullopt;  // Intersection is behind the ray origin
 
-  return Hit{t, u, v};
+  return TriangleHitResult{t, u, v};
 }
 }  // namespace percepto::math::intersection

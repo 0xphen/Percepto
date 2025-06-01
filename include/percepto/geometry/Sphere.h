@@ -4,10 +4,11 @@
 
 #include "percepto/core/intersectable.h"
 #include "percepto/core/ray.h"
+#include "percepto/core/types.h"
 #include "percepto/core/vec3.h"
 #include "percepto/math/math_utils.h"
 
-using percepto::core::Vec3, percepto::core::Ray;
+using percepto::core::Vec3, percepto::core::Ray, percepto::core::HitRecord;
 using namespace percepto::math;
 
 namespace percepto::geometry
@@ -61,12 +62,11 @@ class Sphere : public percepto::core::Intersectable<Sphere>
    * or false if no valid intersection occurs in front of the ray origin.
    *
    * @param ray     The input ray to test against the sphere.
-   * @param t_hit   Output parameter. If the ray intersects, this will contain the distance (t) to
-   *                the closest intersection point.
+   * @param hit_record   Output parameter. If the ray intersects, this will contain the `HitRecord`
    * @return true if the ray intersects the sphere (in front of the ray origin); false otherwise.
    */
   [[nodiscard]]
-  bool intercept(const Ray& ray, double& t_hit) const
+  bool intersect(const Ray& ray, HitRecord& hit_record) const
   {
     QuadraticCoefficients q_coef = computeQuadraticCoefficients(ray, *this);
 
@@ -85,7 +85,9 @@ class Sphere : public percepto::core::Intersectable<Sphere>
         return false;  // No valid intersection in [tMin, tMax]
     }
 
-    t_hit = t0;
+    hit_record.t = t0;
+    hit_record.point = ray.at(t0);
+
     return true;
   }
 

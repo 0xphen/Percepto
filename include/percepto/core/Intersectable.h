@@ -1,3 +1,7 @@
+#pragma once
+
+#include "percepto/core/types.h"
+
 namespace percepto::core
 {
 
@@ -21,11 +25,11 @@ class Intersectable
  public:
   // Dispatches the call to the derived class’s implementation of `intercept`
   // using CRTP. Returns true if the ray hits the object, and writes the hit
-  // distance to `t_hit`.
+  // record to `hit_record`.
   [[nodiscard]]
-  bool intercept(const Ray& ray, double& t_hit) const
+  bool intersect(const Ray& ray, percepto::core::HitRecord& hit_record) const
   {
-    return static_cast<const Derived*>(this)->intercept(ray, t_hit);
+    return static_cast<const Derived*>(this)->intercept(ray, hit_record);
   }
 };
 
