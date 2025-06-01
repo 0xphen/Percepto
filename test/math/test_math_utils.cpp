@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "TestHelpers.h"
+#include "test_helpers.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
 #include "percepto/geometry/sphere.h"

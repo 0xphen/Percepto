@@ -2,7 +2,7 @@
 
 #include <percepto/core/ray_builder.h>
 #include <percepto/core/vec3.h>
-#include "TestHelpers.h"
+#include "test_helpers.h"
 
 using percepto::core::RayBuilder, percepto::core::Vec3, percepto::core::Ray;
 using percepto::test::CoreTest;
