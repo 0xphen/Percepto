@@ -4,6 +4,8 @@
 
 namespace percepto::core
 {
+inline constexpr double EPSILON = 1e-6;
+
 // Stores raw intersection data returned by the Möller–Trumbore algorithm for triangles.
 struct TriangleHitResult
 {

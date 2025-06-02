@@ -4,7 +4,6 @@
 #include "test_helpers.h"
 
 using percepto::core::Vec3;
-using percepto::test::CoreTest;
 
 class Vec3Test : public ::testing::Test
 {

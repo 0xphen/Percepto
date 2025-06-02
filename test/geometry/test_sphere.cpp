@@ -1,15 +1,16 @@
 #include <gtest/gtest.h>
 
-#include "test_helpers.h"
 #include <percepto/core/ray.h>
 #include <percepto/core/types.h>
 #include <percepto/core/vec3.h>
 #include <percepto/geometry/sphere.h>
+#include "test_helpers.h"
 
-using percepto::core::Ray, percepto::geometry::Sphere, percepto::core::Vec3, percepto::core::Ray, percepto::core::HitRecord;
-using percepto::test::GeometryTest;
+using percepto::core::Ray, percepto::geometry::Sphere, percepto::core::Vec3, percepto::core::Ray,
+    percepto::core::HitRecord;
+using percepto::test::GeometryTestFixture;
 
-TEST_F(GeometryTest, SphereTest_RaySphereIntersection)
+TEST_F(GeometryTestFixture, SphereTest_RaySphereIntersection)
 {
   {
     SCOPED_TRACE("Ray-Sphere Intersection: Ray from origin directly toward sphere center");

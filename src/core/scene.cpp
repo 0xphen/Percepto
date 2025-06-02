@@ -28,14 +28,19 @@ bool Scene::intersect(const Ray& ray, HitRecord& hit_record)
           HitRecord temp_hit_record;
           if (obj.intersect(ray, temp_hit_record) && temp_hit_record.t < closest_hit)
           {
-            hit_object = true;
             closest_hit = temp_hit_record.t;
             hit_record = temp_hit_record;
+            hit_object = true;
           }
         },
         object);
   }
 
   return hit_object;
+}
+
+int Scene::size() const
+{
+  return static_cast<int>(scene_.size());
 }
 }  // namespace percepto::core

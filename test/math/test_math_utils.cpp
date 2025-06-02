@@ -1,16 +1,16 @@
 #include <gtest/gtest.h>
 
-#include "test_helpers.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
 #include "percepto/geometry/sphere.h"
 #include "percepto/math/math_utils.h"
+#include "test_helpers.h"
 
 using percepto::geometry::Sphere, percepto::core::Vec3;
 using namespace percepto::math;
-using percepto::test::MathTest;
+using percepto::test::MathTestFixture;
 
-TEST_F(MathTest, SolveQuadratic_Variants)
+TEST_F(MathTestFixture, SolveQuadratic_Variants)
 {
   {
     SCOPED_TRACE("Two real roots");
@@ -37,7 +37,7 @@ TEST_F(MathTest, SolveQuadratic_Variants)
   }
 }
 
-TEST_F(MathTest, ComputeQuadraticCoefficients_Variants)
+TEST_F(MathTestFixture, ComputeQuadraticCoefficients_Variants)
 {
   {
     SCOPED_TRACE("Happy path: ray origin outside sphere, intersects at two points");

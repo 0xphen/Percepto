@@ -14,6 +14,8 @@ namespace percepto::geometry
 class Triangle : public percepto::core::Intersectable<Triangle>
 {
  public:
+  Triangle(const Vec3& v0, const Vec3& v1, const Vec3& v2) : v0_(v0), v1_(v1), v2_(v2) {}
+
   /**
    * @brief Check if a ray hits this triangle and return the hit distance.
    *

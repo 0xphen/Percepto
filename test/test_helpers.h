@@ -4,8 +4,9 @@
 
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
+#include "percepto/geometry/triangle.h"
 
-using percepto::core::Ray, percepto::core::Vec3;
+using percepto::core::Ray, percepto::core::Vec3, percepto::geometry::Triangle;
 
 #define EXPECT_VEC3_EQ(v1, v2)        \
   do                                  \
@@ -18,7 +19,7 @@ using percepto::core::Ray, percepto::core::Vec3;
 namespace percepto::test
 {
 
-class CoreTest : public ::testing::Test
+class CoreTestFixture : public ::testing::Test
 {
  public:
   const Vec3 origin = Vec3(0.0, 0.0, 0.0);
@@ -28,14 +29,28 @@ class CoreTest : public ::testing::Test
   const Ray ray = Ray(origin, direction, t_min, t_max);
 };
 
-class GeometryTest : public CoreTest
+class GeometryTestFixture : public CoreTestFixture
 {
  public:
   const Vec3 sphere_centre = Vec3(5.0, 2.0, 12.0);
   double sphere_radius = 5.0;
 };
 
-class MathTest : public GeometryTest
+class MathTestFixture : public GeometryTestFixture
+{
+};
+
+class TriangleTestFixture : public GeometryTestFixture
+{
+ public:
+  const Triangle standard_triangle{Vec3(0.0, 0.0, 0.0), Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0)};
+};
+
+class IntersectionTestFixture : public TriangleTestFixture
+{
+};
+
+class SceneTestFixture : public TriangleTestFixture
 {
 };
 

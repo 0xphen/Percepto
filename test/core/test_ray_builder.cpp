@@ -5,9 +5,9 @@
 #include "test_helpers.h"
 
 using percepto::core::RayBuilder, percepto::core::Vec3, percepto::core::Ray;
-using percepto::test::CoreTest;
+using percepto::test::CoreTestFixture;
 
-TEST_F(CoreTest, RayBuilder_BuildsRayWithCorrectParams)
+TEST_F(CoreTestFixture, RayBuilder_BuildsRayWithCorrectParams)
 {
   RayBuilder builder =
       RayBuilder().setOrigin(origin).setDirection(direction).setRange(t_min, t_max);
@@ -41,7 +41,7 @@ TEST_F(CoreTest, RayBuilder_BuildsRayWithCorrectParams)
   EXPECT_NEAR(actualDirection.z, expectedDirection.z, 1e-9);
 }
 
-TEST_F(CoreTest, RayBuilderTest_TryBuildFailsIfZeroDirection)
+TEST_F(CoreTestFixture, RayBuilderTest_TryBuildFailsIfZeroDirection)
 {
   RayBuilder rayBuilder =
       RayBuilder().setOrigin(origin).setDirection(Vec3(0.0, 0.0, 0.0)).setRange(t_min, t_max);

@@ -1,3 +1,4 @@
+#include "percepto/math/math_utils.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
 #include "percepto/geometry/sphere.h"

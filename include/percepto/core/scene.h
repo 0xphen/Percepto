@@ -20,6 +20,7 @@ class Scene
 
   void add_object(const Object& object);
   bool intersect(const Ray& ray, HitRecord& hit_record);
+  int size() const;
 
  private:
   std::vector<Object> scene_;
