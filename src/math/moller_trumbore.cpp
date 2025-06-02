@@ -64,7 +64,8 @@ std::optional<TriangleHitResult> moller_trumbore(const Vec3& v0, const Vec3& v1,
   if (v < 0.0 || u + v > 1.0) return std::nullopt;  // Intersection outside the triangle
 
   double t = edgeAC.dot(q) * invDet;
-  if (t < EPSILON) return std::nullopt;  // Intersection is behind the ray origin
+  if (t < ray.tMin() || t > ray.tMax())
+    return std::nullopt;  // t is outside the valid [tMin, tMax] range (behind origin or too far)
 
   return TriangleHitResult{t, u, v};
 }
