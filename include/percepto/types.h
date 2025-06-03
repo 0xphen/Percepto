@@ -2,7 +2,7 @@
 
 #include "percepto/core/vec3.h"
 
-namespace percepto::core
+namespace percepto
 {
 inline constexpr double EPSILON = 1e-6;
 
@@ -33,4 +33,4 @@ enum class SceneFormat
   JSON   ///< JSON‐based scene description
 };
 
-}  // namespace percepto::core
+}  // namespace percepto

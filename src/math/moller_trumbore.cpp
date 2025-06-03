@@ -1,9 +1,9 @@
 #include <optional>
 
 #include "percepto/core/ray.h"
-#include "percepto/core/types.h"
 #include "percepto/core/vec3.h"
 #include "percepto/math/intersection/moller_trumbore.h"
+#include "percepto/types.h"
 
 using namespace percepto::core;
 

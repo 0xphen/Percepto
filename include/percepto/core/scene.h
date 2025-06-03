@@ -4,12 +4,12 @@
 #include <vector>
 
 #include "percepto/core/ray.h"
-#include "percepto/core/types.h"
 #include "percepto/geometry/sphere.h"
 #include "percepto/geometry/triangle.h"
+#include "percepto/types.h"
 
 using percepto::geometry::Sphere, percepto::geometry::Triangle, percepto::core::Ray,
-    percepto::core::HitRecord;
+    percepto::HitRecord;
 
 namespace percepto::core
 {

@@ -1,10 +1,12 @@
 #include <gtest/gtest.h>
+#include <string>
+#include <vector>
 
 #include "percepto/core/ray.h"
 #include "percepto/core/scene.h"
-#include "percepto/core/types.h"
 #include "percepto/core/vec3.h"
 #include "percepto/geometry/triangle.h"
+#include "percepto/types.h"
 #include "test_helpers.h"
 
 using namespace percepto::core;
@@ -29,26 +31,39 @@ TEST_F(SceneTestFixture, Intersect_EmptyScene_ReturnsFalse)
 {
   Scene scene;
   Ray ray(Vec3(0, 0, 0), Vec3(1, 0, 0), 0.0, 100.0);
-  HitRecord rec;
+  HitRecord hit_record;
 
   EXPECT_EQ(scene.size(), 0);
-  EXPECT_FALSE(scene.intersect(ray, rec));
+  EXPECT_FALSE(scene.intersect(ray, hit_record));
 }
-
 TEST_F(SceneTestFixture, Intersect_MultipleObjects_ReturnsClosest)
 {
-  Scene scene;
-  scene.add_object(unit_right_triangle);      // Hit at t ≈ 1
-  scene.add_object(unit_right_triangle_zm1);  // Hit at t ≈ 2
+  auto runIntersectionTest =
+      [=](const std::vector<Triangle>& objects, const std::string& trace_info)
+  {
+    SCOPED_TRACE(trace_info);
 
-  Vec3 rayOrig(0.2, 0.3, 1.0);
-  Vec3 rayDir(0.0, 0.0, -1.0);
+    Scene scene;
+    for (const auto& obj : objects)
+    {
+      scene.add_object(obj);
+    }
 
-  Ray ray(rayOrig, rayDir, t_min, t_max);
+    Vec3 rayOrig(0.2, 0.3, 1.0);
+    Vec3 rayDir(0.0, 0.0, -1.0);
+    Ray ray(rayOrig, rayDir, t_min, t_max);
 
-  HitRecord hit_record;
-  ASSERT_TRUE(scene.intersect(ray, hit_record));
-  EXPECT_NEAR(hit_record.t, 1.0, 1e-6);
+    HitRecord hit_record;
+    ASSERT_TRUE(scene.intersect(ray, hit_record));
+    EXPECT_NEAR(hit_record.t, 1.0, 1e-6);
+  };
+
+  runIntersectionTest({unit_right_triangle, unit_right_triangle_zm1},
+                      "Order: near (t≈1) then far (t≈2)");
+
+  // Reversed insertion order; still should pick the closest.
+  runIntersectionTest({unit_right_triangle_zm1, unit_right_triangle},
+                      "Order: far (t≈2) then near (t≈1)");
 }
 
 TEST_F(SceneTestFixture, Intersect_RayMissesAll_ReturnsFalse)

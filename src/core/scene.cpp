@@ -3,8 +3,8 @@
 
 #include "percepto/core/ray.h"
 #include "percepto/core/scene.h"
-#include "percepto/core/types.h"
 #include "percepto/core/vec3.h"
+#include "percepto/types.h"
 
 using percepto::core::Scene, percepto::core::Ray, percepto::core::Vec3;
 

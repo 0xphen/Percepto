@@ -2,10 +2,10 @@
 
 #include <optional>
 #include "percepto/core/ray.h"
-#include "percepto/core/types.h"
 #include "percepto/core/vec3.h"
+#include "percepto/types.h"
 
-using percepto::core::Ray, percepto::core::Vec3, percepto::core::TriangleHitResult;
+using percepto::core::Ray, percepto::core::Vec3, percepto::TriangleHitResult;
 
 namespace percepto::math::intersection
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "percepto/core/types.h"
+#include "percepto/types.h"
 
 namespace percepto::core
 {
@@ -27,7 +27,7 @@ class Intersectable
   // using CRTP. Returns true if the ray hits the object, and writes the hit
   // record to `hit_record`.
   [[nodiscard]]
-  bool intersect(const Ray& ray, percepto::core::HitRecord& hit_record) const
+  bool intersect(const Ray& ray, percepto::HitRecord& hit_record) const
   {
     return static_cast<const Derived*>(this)->intercept(ray, hit_record);
   }

@@ -2,12 +2,12 @@
 
 #include "percepto/core/intersectable.h"
 #include "percepto/core/ray.h"
-#include "percepto/core/types.h"
 #include "percepto/core/vec3.h"
 #include "percepto/math/intersection/moller_trumbore.h"
+#include "percepto/types.h"
 
 using percepto::core::Vec3, percepto::core::Ray, percepto::math::intersection::moller_trumbore,
-    percepto::core::HitRecord;
+    percepto::HitRecord;
 
 namespace percepto::geometry
 {

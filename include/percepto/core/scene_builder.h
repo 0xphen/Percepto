@@ -1,7 +1,7 @@
 #pragma once
 
 #include "percepto/core/scene.h"
-#include "percepto/core/types.h"
+#include "percepto/types.h"
 
 namespace percepto::core
 {
