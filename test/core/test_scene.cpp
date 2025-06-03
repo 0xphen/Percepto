@@ -10,20 +10,68 @@
 using namespace percepto::core;
 using percepto::test::SceneTestFixture;
 
-TEST_F(SceneTestFixture, Single_Object_Hit)
+TEST_F(SceneTestFixture, Intersect_Single_Triangle_Hit)
 {
-  {
-    SCOPED_TRACE("Hits Single Triangle");
-    Triangle triangle(unit_right_triangle.v0(), unit_right_triangle.v1(), unit_right_triangle.v2());
+  Scene scene;
+  scene.add_object(unit_right_triangle);
 
-    Scene scene;
-    scene.add_object(triangle);
+  EXPECT_EQ(scene.size(), 1);
 
-    ASSERT_TRUE(scene.size() == 1);
+  Ray ray(Vec3(0.25, 0.25, 1.0), Vec3(0.0, 0.0, -1.0), 0.0, 100.0);
 
-    Ray ray(Vec3(0.25, 0.25, 1.0), Vec3(0.0, 0.0, -1.0), 0.0, 100.0);
-    HitRecord hit_record;
+  HitRecord hit_record;
+  ASSERT_TRUE(scene.intersect(ray, hit_record));
+  EXPECT_NEAR(hit_record.t, 1.0, 1e-6);
+  EXPECT_VEC3_EQ(ray.at(hit_record.t), Vec3(0.25, 0.25, 0.0));
+}
 
-    ASSERT_TRUE(scene.intersect(ray, hit_record));
-  }
+TEST_F(SceneTestFixture, Intersect_EmptyScene_ReturnsFalse)
+{
+  Scene scene;
+  Ray ray(Vec3(0, 0, 0), Vec3(1, 0, 0), 0.0, 100.0);
+  HitRecord rec;
+
+  EXPECT_EQ(scene.size(), 0);
+  EXPECT_FALSE(scene.intersect(ray, rec));
+}
+
+TEST_F(SceneTestFixture, Intersect_MultipleObjects_ReturnsClosest)
+{
+  Scene scene;
+  scene.add_object(unit_right_triangle);      // Hit at t ≈ 1
+  scene.add_object(unit_right_triangle_zm1);  // Hit at t ≈ 2
+
+  Vec3 rayOrig(0.2, 0.3, 1.0);
+  Vec3 rayDir(0.0, 0.0, -1.0);
+
+  Ray ray(rayOrig, rayDir, t_min, t_max);
+
+  HitRecord hit_record;
+  ASSERT_TRUE(scene.intersect(ray, hit_record));
+  EXPECT_NEAR(hit_record.t, 1.0, 1e-6);
+}
+
+TEST_F(SceneTestFixture, Intersect_RayMissesAll_ReturnsFalse)
+{
+  Scene scene;
+  scene.add_object(unit_right_triangle);
+
+  Ray ray(Vec3(2, 2, 0), Vec3(3, 4, 5), t_min, t_max);
+  HitRecord hit_record;
+  EXPECT_FALSE(scene.intersect(ray, hit_record));
+}
+
+TEST_F(SceneTestFixture, Intersect_Degenerate_Object_ReturnsFalse)
+{
+  Vec3 v0(0.0, 0.0, 0.0);
+  Vec3 v1(1e-8, 0.0, 0.0);
+  Vec3 v2(2e-8, 0.0, 0.0);
+
+  Scene scene;
+  scene.add_object(Triangle(v0, v1, v2));  // Skinny triangle - almost 0 area
+
+  Ray ray(Vec3(1e-9, 1e-9, 1.0), Vec3(0.0, 0.0, -1.0), 0.0, 100.0);
+
+  HitRecord hit_record;
+  EXPECT_FALSE(scene.intersect(ray, hit_record));
 }

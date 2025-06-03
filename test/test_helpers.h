@@ -44,6 +44,11 @@ class TriangleTestFixture : public GeometryTestFixture
 {
  public:
   const Triangle unit_right_triangle{Vec3(0.0, 0.0, 0.0), Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0)};
+
+  const Triangle unit_right_triangle_zm1{Vec3(0.0, 0.0, -1.0), Vec3(1.0, 0.0, -1.0),
+                                         Vec3(0.0, 1.0, -1.0)};
+
+  const Triangle tilted_triangle{Vec3(0.0, 0.0, 0.0), Vec3(1.0, 2.0, 0.5), Vec3(2.0, 1.0, 1.0)};
 };
 
 class IntersectionTestFixture : public TriangleTestFixture

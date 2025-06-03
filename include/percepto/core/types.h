@@ -23,4 +23,14 @@ struct HitRecord
   bool front_face = true;       // True if ray hits front face; false if hitting from inside.
 };
 
+/// Used by the SceneBuilder to determine which parser to invoke when
+/// loading scene geometry and objects.
+enum class SceneFormat
+{
+  CSV,   ///< Custom CSV listing of objects
+  OBJ,   ///< Wavefront OBJ model
+  GLTF,  ///< glTF 2.0 format
+  JSON   ///< JSON‐based scene description
+};
+
 }  // namespace percepto::core
