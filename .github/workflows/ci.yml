@@ -20,23 +20,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2) Install necessary packages: cmake, build tools, and Google Test
+      # 2) Install necessary packages: cmake, compiler, and libgtest-dev (source only)
       - name: Install dependencies
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y cmake build-essential libgtest-dev
 
-      # 3) Build Google Test from source and copy libraries into /usr/lib
-      - name: Build & copy Google Test libraries
+      # 3) Build Google Test in /tmp/gtest_build and copy the .a files to /usr/lib
+      - name: Build & install Google Test libraries
         run: |
+          # Make a temporary build directory outside /usr/src/gtest
+          mkdir -p /tmp/gtest_build
           cd /usr/src/gtest
-          mkdir -p build
-          cd build
-          cmake ..
-          cmake --build . 
-          sudo cp *.a /usr/lib
+          cmake . -B /tmp/gtest_build
+          cmake --build /tmp/gtest_build
+          # Copy the built .a files into /usr/lib so find_package(GTest) will work
+          sudo cp /tmp/gtest_build/*.a /usr/lib/
 
-      # 4) Configure & build your project with CMake
+      # 4) Configure and build your project with CMake
       - name: Configure & build with CMake
         run: |
           mkdir -p build
@@ -49,3 +50,10 @@ jobs:
         working-directory: build
         run: |
           make test
+
+      # 6) (Optional) Upload test logs
+      # - name: Upload test logs
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: test-logs
+      #     path: build/Testing/Temporary/LastTest.log
