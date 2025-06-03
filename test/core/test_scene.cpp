@@ -14,11 +14,8 @@ TEST_F(SceneTestFixture, Single_Object_Hit)
 {
   {
     SCOPED_TRACE("Hits Single Triangle");
-    Vec3 v0(0.0, 0.0, 0.0);
-    Vec3 v1(1.0, 0.0, 0.0);
-    Vec3 v2(0.0, 1.0, 0.0);
+    Triangle triangle(unit_right_triangle.v0(), unit_right_triangle.v1(), unit_right_triangle.v2());
 
-    Triangle triangle(v0, v1, v2);
     Scene scene;
     scene.add_object(triangle);
 

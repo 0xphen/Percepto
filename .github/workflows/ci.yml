@@ -1,0 +1,57 @@
+# .github/workflows/ci.yml
+
+name: C++ CI (make test)
+
+# Trigger on any push or pull request
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) Check out your repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2) Install necessary packages: cmake, build tools, and Google Test
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          # Install CMake (if your project requires a newer version, adjust accordingly)
+          sudo apt-get install -y cmake build-essential
+          # Install libgtest-dev (headers + source) so we can build and install GTest
+          sudo apt-get install -y libgtest-dev
+
+      # 3) Build and install Google Test (Ubuntu’s package provides source only)
+      - name: Build & install Google Test
+        run: |
+          sudo cmake -S /usr/src/gtest -B /usr/src/gtest/build
+          sudo cmake --build /usr/src/gtest/build --target install
+
+      # 4) Configure and build your project with CMake
+      - name: Configure & build with CMake
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --config Release -- -j$(nproc)
+
+      # 5) Run your tests via `make test`
+      - name: Run unit tests
+        working-directory: build
+        run: |
+          make test
+
+      # 6) (Optional) Upload any test logs or artifacts
+      # - name: Upload test logs
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: test-logs
+      #     path: build/Testing/Temporary/LastTest.log
