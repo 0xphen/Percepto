@@ -2,7 +2,6 @@
 
 name: C++ CI (make test)
 
-# Trigger on any push or pull request
 on:
   push:
     branches:
@@ -29,15 +28,16 @@ jobs:
       # 3) Build Google Test in /tmp/gtest_build and copy the .a files to /usr/lib
       - name: Build & install Google Test libraries
         run: |
-          # Make a temporary build directory outside /usr/src/gtest
+          # Create a separate build directory in /tmp
           mkdir -p /tmp/gtest_build
           cd /usr/src/gtest
           cmake . -B /tmp/gtest_build
           cmake --build /tmp/gtest_build
-          # Copy the built .a files into /usr/lib so find_package(GTest) will work
-          sudo cp /tmp/gtest_build/*.a /usr/lib/
+          # Copy the built libraries from /tmp/gtest_build/lib into /usr/lib
+          sudo cp /tmp/gtest_build/lib/libgtest.a /usr/lib/
+          sudo cp /tmp/gtest_build/lib/libgtest_main.a /usr/lib/
 
-      # 4) Configure and build your project with CMake
+      # 4) Configure & build your project with CMake
       - name: Configure & build with CMake
         run: |
           mkdir -p build
