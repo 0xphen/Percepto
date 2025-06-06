@@ -1,19 +1,44 @@
 #include <gtest/gtest.h>
+#include <array>
 #include <fstream>
+#include <string>
 #include <variant>
-#include "string"
+#include <vector>
 
 #include "percepto/core/vec3.h"
 #include "percepto/geometry/triangle.h"
 #include "percepto/io/csv_parser.h"
 #include "test_helpers.h"
 
-using percepto::test::CsvParserTestFixture, percepto::geometry::Triangle, percepto::core::Vec3;
+using percepto::core::Vec3;
+using percepto::geometry::Triangle;
+using percepto::test::CsvParserTestFixture;
 
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+//  Helper to compare one Triangle against three expected Vec3s
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+void AssertTriangleMatches(const Triangle& t, const std::array<Vec3, 3>& expected)
+{
+  EXPECT_DOUBLE_EQ(t.v0().x, expected[0].x);
+  EXPECT_DOUBLE_EQ(t.v0().y, expected[0].y);
+  EXPECT_DOUBLE_EQ(t.v0().z, expected[0].z);
+
+  EXPECT_DOUBLE_EQ(t.v1().x, expected[1].x);
+  EXPECT_DOUBLE_EQ(t.v1().y, expected[1].y);
+  EXPECT_DOUBLE_EQ(t.v1().z, expected[1].z);
+
+  EXPECT_DOUBLE_EQ(t.v2().x, expected[2].x);
+  EXPECT_DOUBLE_EQ(t.v2().y, expected[2].y);
+  EXPECT_DOUBLE_EQ(t.v2().z, expected[2].z);
+}
+
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+//  Test: loading three triangles from a well‐formed CSV
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 TEST_F(CsvParserTestFixture, LoadsTriangle_FromCsv)
 {
   std::ofstream out(fs.existing_file);
-  ASSERT_TRUE(out.is_open()) << "Failed to create temp file " << fs.existing_file;
+  ASSERT_TRUE(out.is_open()) << "Failed to open temp file " << fs.existing_file;
 
   out << "x0,y0,z0,x1,y1,z1,x2,y2,z2\n";  // the 9-column header:
   out << "0.0,0.1,0.2, 1.0,1.1,1.2, 2.0,2.1,2.2\n";
@@ -29,54 +54,35 @@ TEST_F(CsvParserTestFixture, LoadsTriangle_FromCsv)
 
   percepto::io::CsvParser parser;
   auto scene = parser.load_scene_from_csv(fs.existing_file.string());
-  EXPECT_EQ(scene->size(), 3);
 
-  size_t idx = 0;
-  for (const auto& object : scene->objects())
+  ASSERT_EQ(scene->size(), 3u) << "Expected 3 triangles in the scene";
+  for (size_t i = 0; i < scene->objects().size(); ++i)
   {
-    if (std::holds_alternative<Triangle>(object))
-    {
-      // scene->objects() preserves the insertion order.
-      // Thus, triangle at index `idx` in scene->objects() should correspond
-      // to triangle_vertices[idx] in the expected list.
-      ASSERT_TRUE(std::holds_alternative<Triangle>(object))
-          << "Object #" << idx << " should be a Triangle";
+    const auto& obj = scene->objects()[i];
+    ASSERT_TRUE(std::holds_alternative<Triangle>(obj)) << "Object #" << i << " is not a Triangle";
+  }
 
-      const Triangle& t = std::get<Triangle>(object);
-
-      auto const& e = triangle_vertices[idx];
-
-      // Vertex 0 comparisons:
-      EXPECT_DOUBLE_EQ(t.v0().x, e[0].x);
-      EXPECT_DOUBLE_EQ(t.v0().y, e[0].y);
-      EXPECT_DOUBLE_EQ(t.v0().z, e[0].z);
-
-      // Vertex 1 comparisons:
-      EXPECT_DOUBLE_EQ(t.v1().x, e[1].x);
-      EXPECT_DOUBLE_EQ(t.v1().y, e[1].y);
-      EXPECT_DOUBLE_EQ(t.v1().z, e[1].z);
-
-      // Vertex 2 comparisons:
-      EXPECT_DOUBLE_EQ(t.v2().x, e[2].x);
-      EXPECT_DOUBLE_EQ(t.v2().y, e[2].y);
-      EXPECT_DOUBLE_EQ(t.v2().z, e[2].z);
-
-      ++idx;
-    }
+  for (size_t i = 0; i < 3; ++i)
+  {
+    const Triangle& t = std::get<Triangle>(scene->objects()[i]);
+    AssertTriangleMatches(t, triangle_vertices[i]);
   }
 }
 
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+//  Test: too many or too few columns → throws
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+struct ColumnCountTestCase
+{
+  const char* name;
+  const char* data_line;
+};
+
 TEST_F(CsvParserTestFixture, Throws_OnTooManyOrTooFewColumns)
 {
-  struct TestCase
-  {
-    const char* name;
-    const char* data_line;
-  };
-
-  const std::vector<TestCase> cases = {
-      {"Too few columns", "0.0,0.0,0.0, 1.0,0.0,0.0, 0.0"},                 // 7 doubles
-      {"Too many columns", "0.0,0.0,0.0, 1.0,0.0,0.0, 0.0, 0.8, 9.0, 1.2"}  // 10 doubles
+  const std::vector<ColumnCountTestCase> cases = {
+      {"Too few columns", "0.0,0.0,0.0, 1.0,0.0,0.0, 0.0"},              // 7 doubles
+      {"Too many columns", "0.0,0.0,0.0, 1.0,0.0,0.0, 0.0,0.8,9.0,1.2"}  // 10 doubles
   };
 
   for (auto const& c : cases)
@@ -84,34 +90,43 @@ TEST_F(CsvParserTestFixture, Throws_OnTooManyOrTooFewColumns)
     SCOPED_TRACE(c.name);
 
     std::ofstream out(fs.existing_file);
-    ASSERT_TRUE(out.is_open());
+    ASSERT_TRUE(out.is_open()) << "Cannot open temp file";
     out << "x0,y0,z0,x1,y1,z1,x2,y2,z2\n";
     out << c.data_line << "\n";
-    out.close();
 
     percepto::io::CsvParser parser;
     EXPECT_THROW(parser.load_scene_from_csv(fs.existing_file.string()), std::runtime_error);
   }
 }
 
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+//  Test: missing file → throws
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 TEST_F(CsvParserTestFixture, Throws_OnNonexistentFile)
 {
   percepto::io::CsvParser parser;
+  // non_existent_file was never created by FileTestFixture
   EXPECT_THROW(parser.load_scene_from_csv(fs.non_existent_file.string()), std::runtime_error);
 }
 
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+//  Test: unreadable file (permissions removed) → throws
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 TEST_F(CsvParserTestFixture, Throws_OnUnreadableFile)
 {
-  // fs.unreadable_file was created by FileTestFixture with its read‐bits removed.
+  // FileTestFixture’s constructor made `fs.unreadable_file` non‐readable.
   percepto::io::CsvParser parser;
   EXPECT_THROW(parser.load_scene_from_csv(fs.unreadable_file.string()), std::runtime_error);
 }
 
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+//  Test: various formatting of doubles (spaces, +/–, scientific)
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 TEST_F(CsvParserTestFixture, ParsesVariousDoubleFormats)
 {
-  // H  eader + two rows with various double formats:
   std::ofstream out(fs.existing_file);
   ASSERT_TRUE(out.is_open());
+
   out << "x0,y0,z0,x1,y1,z1,x2,y2,z2\n";
   out << " 0.0 , -1.5 , +2.0 ,  3.0,  4.0,  5.0,  6e-1 ,  7E1,  8.0 \n";
   out << " 9.9, 10.10, 11.11, 12.12, 13.13, 14.14, 15.15, 16.16, 17.17\n";
@@ -119,7 +134,7 @@ TEST_F(CsvParserTestFixture, ParsesVariousDoubleFormats)
 
   percepto::io::CsvParser parser;
   auto scene = parser.load_scene_from_csv(fs.existing_file.string());
-  ASSERT_EQ(scene->size(), 2);
+  ASSERT_EQ(scene->size(), 2u) << "Expected 2 triangles";
 
   // 3a) Verify Triangle #0 (from the first data line):
   {
@@ -166,6 +181,9 @@ TEST_F(CsvParserTestFixture, ParsesVariousDoubleFormats)
   }
 }
 
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+//  Test: header‐only CSV → empty scene, no throw
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 TEST_F(CsvParserTestFixture, EmptyCsvReturnsEmptyScene)
 {
   std::ofstream out(fs.existing_file);
@@ -174,7 +192,11 @@ TEST_F(CsvParserTestFixture, EmptyCsvReturnsEmptyScene)
   out.close();
 
   percepto::io::CsvParser parser;
-  auto scene = parser.load_scene_from_csv(fs.existing_file.string());
-  EXPECT_EQ(scene->size(), 0);
-  EXPECT_TRUE(scene->objects().empty());
+
+  // Should not throw when there are zero data rows
+  EXPECT_NO_THROW({
+    auto scene = parser.load_scene_from_csv(fs.existing_file.string());
+    EXPECT_EQ(scene->size(), 0u);
+    EXPECT_TRUE(scene->objects().empty());
+  });
 }
