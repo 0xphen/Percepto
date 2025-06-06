@@ -111,7 +111,7 @@ percepto::geometry::Triangle percepto::io::CsvParser::parse_triangle_from_csv_ro
 std::unique_ptr<percepto::core::Scene> percepto::io::CsvParser::load_scene_from_csv(
     const std::string& filename)
 {
-  ensure_file_readable(filename);
+  this->ensure_file_readable(filename);
 
   auto scene_ptr = std::make_unique<percepto::core::Scene>();
 
@@ -124,7 +124,7 @@ std::unique_ptr<percepto::core::Scene> percepto::io::CsvParser::load_scene_from_
   {
     ++row_num;
 
-    percepto::geometry::Triangle triangle = parse_triangle_from_csv_row(row, row_num);
+    percepto::geometry::Triangle triangle = this->parse_triangle_from_csv_row(row, row_num);
     scene_ptr->add_object(triangle);
   }
 
