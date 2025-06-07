@@ -32,5 +32,4 @@ enum class SceneFormat
   GLTF,  ///< glTF 2.0 format
   JSON   ///< JSON‐based scene description
 };
-
 }  // namespace percepto
