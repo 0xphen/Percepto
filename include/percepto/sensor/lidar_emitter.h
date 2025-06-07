@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cassert>
-#include <cmath>
 #include <vector>
 
 #include "percepto/core/ray.h"
@@ -29,6 +27,17 @@ class LidarEmitter
     current_azimuth_ = 0;
     current_channel_ = 0;
   }
+
+  /// Returns the number of azimuth steps this emitter was configured with.
+  int azimuth_steps() const { return azimuth_steps_; }
+
+  const std::vector<double>& elevation_angles() const { return elevation_angles_; }
+
+  /// Returns the precomputed cosines of each elevation angle.
+  const std::vector<double>& elevation_cosines() const { return cos_elev_; }
+
+  /// Returns the precomputed sines of each elevation angle.
+  const std::vector<double>& elevation_sines() const { return sin_elev_; }
 
   /// Emit the next ray; wraps around after one full revolution.
   percepto::core::Ray next();

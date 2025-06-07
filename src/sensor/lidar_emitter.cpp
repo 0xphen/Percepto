@@ -1,4 +1,6 @@
+#include <cassert>
 #include <cmath>
+#include <system_error>
 
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
@@ -14,7 +16,8 @@ LidarEmitter::LidarEmitter(int azimuth_steps, std::vector<double> elevation_angl
       cos_elev_(),
       sin_elev_()
 {
-  assert(azimuth_steps_ > 0 && !elevation_angles_.empty());
+  if (azimuth_steps_ <= 0) throw std::invalid_argument("azimuth_steps must be > 0");
+  if (elevation_angles_.empty()) throw std::invalid_argument("elevation_angles cannot be empty");
 
   cos_elev_.reserve(elevation_angles_.size());
   sin_elev_.reserve(elevation_angles_.size());
