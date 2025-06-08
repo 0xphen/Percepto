@@ -20,6 +20,14 @@ using percepto::core::Ray, percepto::core::Vec3, percepto::geometry::Triangle;
     EXPECT_DOUBLE_EQ((v1).z, (v2).z); \
   } while (0)
 
+#define EXPECT_VEC3_NEAR(v1, v2, eps) \
+  do                                  \
+  {                                   \
+    EXPECT_NEAR((v1).x, (v2).x, eps); \
+    EXPECT_NEAR((v1).y, (v2).y, eps); \
+    EXPECT_NEAR((v1).z, (v2).z, eps); \
+  } while (0)
+
 namespace percepto::test
 {
 

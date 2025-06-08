@@ -20,18 +20,17 @@ FrameScan LidarSimulator::run_scan(int revs)
   int rows = N * revs;
 
   // Build a FrameScan sized for `rows` × `M`:
-  FrameScan scan(N, M);
+  FrameScan scan(rows, M);
 
   // Initialize with “no hit” sentinels:
   float inf = std::numeric_limits<float>::infinity();
-  scan.ranges.assign(N, std::vector<float>(M, inf));
+  scan.ranges.assign(rows, std::vector<float>(M, inf));
   Vec3 invalid{inf, inf, inf};
-  scan.points.assign(N, std::vector<Vec3>(M, invalid));
+  scan.points.assign(rows, std::vector<Vec3>(M, invalid));
   scan.azimuth_angles.assign(rows, 0.0);
 
   le.reset();
 
-  // For every revolution…
   for (int rev = 0; rev < revs; ++rev)
   {
     for (int i = 0; i < N; ++i)
@@ -47,9 +46,9 @@ FrameScan LidarSimulator::run_scan(int revs)
 
         if (hit)
         {
-          scan.ranges[N][j] = rec.t;
           scan.hits++;
-          scan.points[N][j] = rec.point;
+          scan.ranges[row][j] = rec.t;
+          scan.points[row][j] = rec.point;
         }
       }
     }

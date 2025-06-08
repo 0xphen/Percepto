@@ -19,4 +19,4 @@ target_link_libraries(percepto_lib
 )
 
 enable_testing()
-add_subdirectory(test)
+add_subdirectory(tests)
