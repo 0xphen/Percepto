@@ -37,6 +37,7 @@ struct FrameScan
         points(N, std::vector<percepto::core::Vec3>(M)),
         azimuth_angles(N, 0.0),
         intensities(N, std::vector<float>(M, 0.0f)),
+        hits(0),
         timestamp(0.0)
   {
   }
