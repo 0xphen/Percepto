@@ -60,44 +60,57 @@ TEST(LidarSimulatorTest, SmokeTest)
   });
 }
 
-TEST(LidarSimulatorTest, SingleHit)
+TEST(LidarSimulatorTest, SingleHitAndMultipleRevolutions)
 {
-  // Single‐channel LiDAR at elevation 38.9° (converted to radians),
-  // 8 azimuth steps (45° per step).
+  // ––– Setup: 1‐channel LiDAR at elevation 38.9° (rad), 8 azimuth steps (45° each) –––
   auto emitter_ptr = std::make_unique<LidarEmitter>(8, std::vector<double>{38.9 * DEG2RAD});
 
-  // Scene with one triangle
+  // ––– Scene: one triangle –––
   auto scene_ptr = std::make_unique<Scene>();
   Vec3 v0{1, 1, 1}, v1{4, 2, 3}, v2{2, 4, 4};
   scene_ptr->add_object(Triangle{v0, v1, v2});
 
   LidarSimulator sim(std::move(emitter_ptr), std::move(scene_ptr));
-  auto frame = sim.run_scan(2);
 
-  EXPECT_EQ(frame.hits, 2);
+  // ––– B. Single‐hit: one revolution –––
+  {
+    auto frame1 = sim.run_scan(1);
+    EXPECT_EQ(frame1.hits, 1);
 
-  // The single hit should be on channel 0 at azimuth index 1 (45°).
-  constexpr size_t ELEV_CHANNEL = 0;
-  constexpr size_t AZIMUTH_IDX = 1;
-  constexpr double EXPECTED_RANGE = 4.1727;
+    constexpr size_t ELEV = 0;
+    constexpr size_t AZ = 1;  // 45° step
+    constexpr float EXP_R = 4.1727f;
 
-  // Note: frame.ranges is indexed [azimuth][elevation].
-  float measured = frame.ranges[AZIMUTH_IDX][ELEV_CHANNEL];
-  EXPECT_NEAR(measured, EXPECTED_RANGE, 1e-5f) << "Channel " << ELEV_CHANNEL << ", azimuth step "
-                                               << AZIMUTH_IDX << " produced range " << measured;
+    float r = frame1.ranges[AZ][ELEV];
+    EXPECT_NEAR(r, EXP_R, 1e-5f) << "range at elev=" << ELEV << " az=" << AZ;
 
-  // Recompute the expected hit point by shooting a ray in the known direction
-  // (7,7,8) normalized, then advancing it by the measured range.
-  // We precomputed (7,7,8) because at elevation 38.9° & azimuth 45° the beam direction
-  // aligns exactly with that vector, and normalization gives us a unit‐length ray.
-  Vec3 dir = Vec3(7, 7, 8).normalized();
-  Vec3 pre_computed_point = Ray{Vec3(0, 0, 0), dir, 0, 100}.at(measured);
+    Vec3 dir = Vec3(7, 7, 8).normalized();
+    Vec3 expect_pt = Ray{Vec3{0, 0, 0}, dir, 0, 100}.at(r);
+    Vec3 got_pt = frame1.points[AZ][ELEV];
 
-  // frame.points is likewise [elevation][azimuth].
-  Vec3 actual_point = frame.points[AZIMUTH_IDX][ELEV_CHANNEL];
-  Vec3 d = actual_point - pre_computed_point;
-  float geo_err = std::sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
+    Vec3 d = got_pt - expect_pt;
+    float geo_err = std::sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
+    EXPECT_LT(geo_err, 5e-3f) << "point error = " << geo_err;
+  }
 
-  // here we allow up to 5 mm total 3D error
-  EXPECT_LT(geo_err, 5e-3f) << "3D error = " << geo_err;
+  // ––– C. Multiple‐revolutions: two back‐to‐back sweeps must match –––
+  {
+    auto frame2 = sim.run_scan(/*revolutions=*/2);
+    EXPECT_EQ(frame2.hits, 2);
+
+    constexpr size_t ELEV = 0;
+    constexpr size_t AZ_STEPS = 8;
+
+    // First revolution is in indices [0..7], second in [8..15]
+    for (size_t az = 0; az < AZ_STEPS; ++az)
+    {
+      float r0 = frame2.ranges[az][ELEV];
+      Vec3 p0 = frame2.points[az][ELEV];
+      float r1 = frame2.ranges[az + AZ_STEPS][ELEV];
+      Vec3 p1 = frame2.points[az + AZ_STEPS][ELEV];
+
+      EXPECT_FLOAT_EQ(r0, r1) << "ranges differ at az=" << az;
+      EXPECT_VEC3_EQ(p0, p1);
+    }
+  }
 }

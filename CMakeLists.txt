@@ -15,7 +15,7 @@ add_subdirectory(external/csv-parser)
 add_subdirectory(src)
 target_link_libraries(percepto_lib
     PRIVATE
-      csv    # “csv” is the target that csv-parser’s CMake created
+      csv    
 )
 
 enable_testing()
