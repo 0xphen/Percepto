@@ -58,10 +58,6 @@ percepto::core::Ray LidarEmitter::next()
   }
 
   auto logger = get_percepto_logger();
-  // logger->info("Emitting new LiDAR ray: origin=({}, {}, {}), direction=({}, {}, {})",
-  //               ray.origin().x, ray.origin().y, ray.origin().z, ray.direction().x,
-  //               ray.direction().y, ray.direction().z);
-
   return ray;
 }
 }  // namespace percepto::sensor
