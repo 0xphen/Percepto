@@ -4,6 +4,7 @@
 
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
+#include "percepto/io/logger.h"
 #include "percepto/sensor/lidar_emitter.h"
 
 using percepto::sensor::LidarEmitter;
@@ -55,6 +56,11 @@ percepto::core::Ray LidarEmitter::next()
       current_azimuth_ = 0;
     }
   }
+
+  auto logger = get_percepto_logger();
+  // logger->info("Emitting new LiDAR ray: origin=({}, {}, {}), direction=({}, {}, {})",
+  //               ray.origin().x, ray.origin().y, ray.origin().z, ray.direction().x,
+  //               ray.direction().y, ray.direction().z);
 
   return ray;
 }

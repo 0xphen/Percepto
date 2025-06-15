@@ -1,0 +1,4 @@
+[scan]
+revs = 1
+azimuth_steps = 36
+elevation_angles = [0, 15, 30]

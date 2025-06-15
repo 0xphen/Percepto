@@ -1,7 +1,0 @@
-x0,y0,z0,x1,y1,z1,x2,y2,z2
-# triangle0 is our tilted patch
-1,1,1,   4,2,3,   2,4,4
-# triangle1 is the +XY unit right triangle in the Z=0 plane
-0,0,0,   1,0,0,   0,1,0
-# triangle2 is an inclined patch in the YZ‐plane
-0,0,0,   0,1,1,   0,2,0

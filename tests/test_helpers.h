@@ -12,6 +12,24 @@
 
 using percepto::core::Ray, percepto::core::Vec3, percepto::geometry::Triangle;
 
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+//  Helper to compare one Triangle against three expected Vec3s
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+inline void AssertTriangleMatches(const Triangle& t, const std::array<Vec3, 3>& expected)
+{
+  EXPECT_DOUBLE_EQ(t.v0().x, expected[0].x);
+  EXPECT_DOUBLE_EQ(t.v0().y, expected[0].y);
+  EXPECT_DOUBLE_EQ(t.v0().z, expected[0].z);
+
+  EXPECT_DOUBLE_EQ(t.v1().x, expected[1].x);
+  EXPECT_DOUBLE_EQ(t.v1().y, expected[1].y);
+  EXPECT_DOUBLE_EQ(t.v1().z, expected[1].z);
+
+  EXPECT_DOUBLE_EQ(t.v2().x, expected[2].x);
+  EXPECT_DOUBLE_EQ(t.v2().y, expected[2].y);
+  EXPECT_DOUBLE_EQ(t.v2().z, expected[2].z);
+}
+
 #define EXPECT_VEC3_EQ(v1, v2)        \
   do                                  \
   {                                   \

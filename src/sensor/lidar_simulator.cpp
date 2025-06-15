@@ -3,6 +3,7 @@
 
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
+#include "percepto/io/logger.h"
 #include "percepto/sensor/lidar_simulator.h"
 #include "percepto/types.h"
 
@@ -12,6 +13,8 @@ using namespace percepto::sensor;
 
 FrameScan LidarSimulator::run_scan(int revs)
 {
+  auto logger = get_percepto_logger();
+
   auto& le = emitter();
   auto& sc = scene();
 
@@ -31,8 +34,11 @@ FrameScan LidarSimulator::run_scan(int revs)
 
   le.reset();
 
+  logger->info("N={}, M={}", N, M);
+
   for (int rev = 0; rev < revs; ++rev)
   {
+    logger->info("Revolution {}/{} complete", rev + 1, revs);
     for (int i = 0; i < N; ++i)
     {
       int row = rev * N + i;
@@ -41,6 +47,7 @@ FrameScan LidarSimulator::run_scan(int revs)
       for (int j = 0; j < M; ++j)
       {
         auto ray = le.next();
+
         HitRecord rec;
         bool hit = sc.intersect(ray, rec);
 
@@ -49,10 +56,15 @@ FrameScan LidarSimulator::run_scan(int revs)
           scan.hits++;
           scan.ranges[row][j] = rec.t;
           scan.points[row][j] = rec.point;
+
+          logger->info("Hit @ azimuth={:.2f}°, channel={} (elev={:.2f}°) → distance={:.3f} m",
+                       scan.azimuth_angles[row], j, le.elevation_angles()[j], rec.t);
         }
       }
     }
   }
+
+  logger->info("Simulation complete");
 
   return scan;
 }

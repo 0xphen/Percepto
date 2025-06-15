@@ -10,6 +10,7 @@
 #include "percepto/core/vec3.h"
 #include "percepto/geometry/triangle.h"
 #include "percepto/io/csv_parser.h"
+#include "percepto/io/logger.h"
 
 using namespace csv;
 
@@ -40,6 +41,8 @@ void percepto::io::CsvParser::ensure_file_readable(const std::string& filename)
 {
   fs::path path{filename};
   std::error_code ec;
+  auto logger = get_percepto_logger();
+  logger->info("Parsing Scene from file " + filename);
 
   if (!fs::exists(path, ec))
   {

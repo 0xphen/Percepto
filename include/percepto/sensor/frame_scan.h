@@ -18,8 +18,11 @@ struct FrameScan
   // 3D points computed from ranges + directions
   std::vector<std::vector<percepto::core::Vec3>> points;
 
-  // the actual azimuth angles used
+  // the actual azimuth elevation angles used
   std::vector<double> azimuth_angles;
+
+  // the virtual laser angles used
+  std::vector<double> elevation_angles;
 
   // intensity per return
   std::vector<std::vector<float>> intensities;

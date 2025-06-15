@@ -9,6 +9,8 @@ file(GLOB_RECURSE TEST_SOURCES
 )
 
 add_executable(percepto_tests ${TEST_SOURCES})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/fixtures
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 # 2) Include paths: your public include + unit/integration helpers
 target_include_directories(percepto_tests PRIVATE
@@ -28,8 +30,8 @@ target_link_libraries(percepto_tests PRIVATE
 # 4) Copy test DATA (CSV, headers, etc.) into the build tree
 add_custom_command(TARGET percepto_tests PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_SOURCE_DIR}/data
-        $<TARGET_FILE_DIR:percepto_tests>/data
+        ${CMAKE_CURRENT_SOURCE_DIR}/fixtures
+        $<TARGET_FILE_DIR:percepto_tests>/fixtures
 )
 
 # 5) Register the test; set its working directory so it sees “data/triangles.csv”
