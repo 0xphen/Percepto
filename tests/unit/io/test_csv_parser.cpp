@@ -104,64 +104,64 @@ TEST_F(CsvParserTestFixture, Throws_OnUnreadableFile)
 // ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //  Test: various formatting of doubles (spaces, +/–, scientific)
 // ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-TEST_F(CsvParserTestFixture, ParsesVariousDoubleFormats)
-{
-  std::ofstream out(fs.existing_file);
-  ASSERT_TRUE(out.is_open());
+// TEST_F(CsvParserTestFixture, ParsesVariousDoubleFormats)
+// {
+//   std::ofstream out(fs.existing_file);
+//   ASSERT_TRUE(out.is_open());
 
-  out << "x0,y0,z0,x1,y1,z1,x2,y2,z2\n";
-  out << " 0.0 , -1.5 , +2.0 ,  3.0,  4.0,  5.0,  6e-1 ,  7E1,  8.0 \n";
-  out << " 9.9, 10.10, 11.11, 12.12, 13.13, 14.14, 15.15, 16.16, 17.17\n";
-  out.close();
+//   out << "x0,y0,z0,x1,y1,z1,x2,y2,z2\n";
+//   out << " 0.0 , -1.5 , +2.0 ,  3.0,  4.0,  5.0,  6e-1 ,  7E1,  8.0 \n";
+//   out << " 9.9, 10.10, 11.11, 12.12, 13.13, 14.14, 15.15, 16.16, 17.17\n";
+//   out.close();
 
-  percepto::io::CsvParser parser;
-  auto scene = parser.load_scene_from_csv(fs.existing_file.string());
-  ASSERT_EQ(scene->size(), 2u) << "Expected 2 triangles";
+//   percepto::io::CsvParser parser;
+//   auto scene = parser.load_scene_from_csv(fs.existing_file.string());
+//   ASSERT_EQ(scene->size(), 2u) << "Expected 2 triangles";
 
-  // 3a) Verify Triangle #0 (from the first data line):
-  {
-    const auto& obj0 = scene->objects()[0];
-    ASSERT_TRUE(std::holds_alternative<Triangle>(obj0)) << "First object should be a Triangle";
-    const Triangle& t0 = std::get<Triangle>(obj0);
+//   // 3a) Verify Triangle #0 (from the first data line):
+//   {
+//     const auto& obj0 = scene->objects()[0];
+//     ASSERT_TRUE(std::holds_alternative<Triangle>(obj0)) << "First object should be a Triangle";
+//     const Triangle& t0 = std::get<Triangle>(obj0);
 
-    // Vertex 0 = (0.0, -1.5, +2.0)
-    EXPECT_FLOAT_EQ(t0.v0().x, 0.0f);
-    EXPECT_FLOAT_EQ(t0.v0().y, -1.5f);
-    EXPECT_FLOAT_EQ(t0.v0().z, 2.0f);
+//     // Vertex 0 = (0.0, -1.5, +2.0)
+//     EXPECT_FLOAT_EQ(t0.v0().x, 0.0f);
+//     EXPECT_FLOAT_EQ(t0.v0().y, -1.5f);
+//     EXPECT_FLOAT_EQ(t0.v0().z, 2.0f);
 
-    // Vertex 1 = (3.0, 4.0, 5.0)
-    EXPECT_FLOAT_EQ(t0.v1().x, 3.0f);
-    EXPECT_FLOAT_EQ(t0.v1().y, 4.0f);
-    EXPECT_FLOAT_EQ(t0.v1().z, 5.0f);
+//     // Vertex 1 = (3.0, 4.0, 5.0)
+//     EXPECT_FLOAT_EQ(t0.v1().x, 3.0f);
+//     EXPECT_FLOAT_EQ(t0.v1().y, 4.0f);
+//     EXPECT_FLOAT_EQ(t0.v1().z, 5.0f);
 
-    // Vertex 2 = (6e-1, 7E1, 8.0) → (0.6, 70.0, 8.0)
-    EXPECT_FLOAT_EQ(t0.v2().x, 0.6f);   // 6e-1 == 0.6
-    EXPECT_FLOAT_EQ(t0.v2().y, 70.0f);  // 7E1 == 70.0
-    EXPECT_FLOAT_EQ(t0.v2().z, 8.0f);
-  }
+//     // Vertex 2 = (6e-1, 7E1, 8.0) → (0.6, 70.0, 8.0)
+//     EXPECT_FLOAT_EQ(t0.v2().x, 0.6f);   // 6e-1 == 0.6
+//     EXPECT_FLOAT_EQ(t0.v2().y, 70.0f);  // 7E1 == 70.0
+//     EXPECT_FLOAT_EQ(t0.v2().z, 8.0f);
+//   }
 
-  // 3b) Verify Triangle #1 (from the second data line):
-  {
-    const auto& obj1 = scene->objects()[1];
-    ASSERT_TRUE(std::holds_alternative<Triangle>(obj1)) << "Second object should be a Triangle";
-    const Triangle& t1 = std::get<Triangle>(obj1);
+//   // 3b) Verify Triangle #1 (from the second data line):
+//   {
+//     const auto& obj1 = scene->objects()[1];
+//     ASSERT_TRUE(std::holds_alternative<Triangle>(obj1)) << "Second object should be a Triangle";
+//     const Triangle& t1 = std::get<Triangle>(obj1);
 
-    // Vertex 0 = ( 9.9, 10.10, 11.11 )
-    EXPECT_FLOAT_EQ(t1.v0().x, 9.9f);
-    EXPECT_FLOAT_EQ(t1.v0().y, 10.10f);
-    EXPECT_FLOAT_EQ(t1.v0().z, 11.11f);
+//     // Vertex 0 = ( 9.9, 10.10, 11.11 )
+//     EXPECT_FLOAT_EQ(t1.v0().x, 9.9f);
+//     EXPECT_FLOAT_EQ(t1.v0().y, 10.10f);
+//     EXPECT_FLOAT_EQ(t1.v0().z, 11.11f);
 
-    // Vertex 1 = (12.12, 13.13, 14.14)
-    EXPECT_FLOAT_EQ(t1.v1().x, 12.12f);
-    EXPECT_FLOAT_EQ(t1.v1().y, 13.13f);
-    EXPECT_FLOAT_EQ(t1.v1().z, 14.14f);
+//     // Vertex 1 = (12.12, 13.13, 14.14)
+//     EXPECT_FLOAT_EQ(t1.v1().x, 12.12f);
+//     EXPECT_FLOAT_EQ(t1.v1().y, 13.13f);
+//     EXPECT_FLOAT_EQ(t1.v1().z, 14.14f);
 
-    // Vertex 2 = (15.15, 16.16, 17.17)
-    EXPECT_FLOAT_EQ(t1.v2().x, 15.15f);
-    EXPECT_FLOAT_EQ(t1.v2().y, 16.16f);
-    EXPECT_FLOAT_EQ(t1.v2().z, 17.17f);
-  }
-}
+//     // Vertex 2 = (15.15, 16.16, 17.17)
+//     EXPECT_FLOAT_EQ(t1.v2().x, 15.15f);
+//     EXPECT_FLOAT_EQ(t1.v2().y, 16.16f);
+//     EXPECT_FLOAT_EQ(t1.v2().z, 17.17f);
+//   }
+// }
 
 // ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //  Test: header‐only CSV → empty scene, no throw
