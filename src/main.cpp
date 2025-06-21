@@ -85,9 +85,6 @@ int main(int argc, char** argv)
     return app.exit(e);
   }
 
-  // ----------------------------------------
-  // 🪵 Logger Initialization
-  // ----------------------------------------
   auto logger = get_percepto_logger();
 
   // ----------------------------------------
