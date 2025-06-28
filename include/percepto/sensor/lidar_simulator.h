@@ -9,7 +9,6 @@
 
 namespace percepto::sensor
 {
-
 class LidarSimulator
 {
  public:
@@ -24,7 +23,7 @@ class LidarSimulator
   LidarEmitter& emitter() { return *lidar_emitter_; }
   percepto::core::Scene& scene() { return *scene_; }
 
-  FrameScan run_scan(int revs);
+  std::vector<FrameScan> run_scan(int revs = 1);
 
  private:
   std::unique_ptr<percepto::sensor::LidarEmitter> lidar_emitter_;

@@ -40,6 +40,18 @@ FetchContent_MakeAvailable(
   CLI11
 )
 
+FetchContent_Declare(
+  benchmark
+  GIT_REPOSITORY https://github.com/google/benchmark.git
+  GIT_TAG v1.8.3
+)
+
+set(BENCHMARK_ENABLE_TESTING OFF)
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+
+FetchContent_MakeAvailable(benchmark)
+
 file(GLOB_RECURSE LIB_SOURCES CONFIGURE_DEPENDS
      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
@@ -56,6 +68,7 @@ target_link_libraries(percepto_lib
     spdlog::spdlog
     csv 
     CLI11::CLI11
+    benchmark
 )
 
 add_executable(percepto
@@ -69,4 +82,5 @@ target_link_libraries(percepto
 
 enable_testing()
 add_subdirectory(tests)
+add_subdirectory(benchmark)
 

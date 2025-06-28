@@ -11,7 +11,7 @@ namespace percepto::sensor
 {
 using namespace percepto::sensor;
 
-FrameScan LidarSimulator::run_scan(int revs)
+std::vector<FrameScan> LidarSimulator::run_scan(int revs)
 {
   auto logger = get_percepto_logger();
 
@@ -20,30 +20,24 @@ FrameScan LidarSimulator::run_scan(int revs)
 
   int N = le.azimuth_steps();
   int M = int(le.elevation_angles().size());
-  int rows = N * revs;
 
-  // Build a FrameScan sized for `rows` × `M`:
-  FrameScan scan(rows, M);
-
-  // Initialize with “no hit” sentinels:
   float inf = std::numeric_limits<float>::infinity();
-  scan.ranges.assign(rows, std::vector<float>(M, inf));
   Vec3 invalid{inf, inf, inf};
-  scan.points.assign(rows, std::vector<Vec3>(M, invalid));
-  scan.azimuth_angles.assign(rows, 0.0);
 
   le.reset();
 
-  logger->info("N={}, M={}", N, M);
+  std::vector<FrameScan> scans;
+  scans.reserve(revs);
 
   for (int rev = 0; rev < revs; ++rev)
   {
+    FrameScan scan(N, M);
+    scan.azimuth_angles = le.azimuth_angles();
+    scan.elevation_angles = le.elevation_angles();
+
     logger->info("Revolution {}/{} complete", rev + 1, revs);
     for (int i = 0; i < N; ++i)
     {
-      int row = rev * N + i;
-      scan.azimuth_angles[row] = 2.0 * M_PI * double(i) / double(N);
-
       for (int j = 0; j < M; ++j)
       {
         auto ray = le.next();
@@ -54,19 +48,21 @@ FrameScan LidarSimulator::run_scan(int revs)
         if (hit)
         {
           scan.hits++;
-          scan.ranges[row][j] = rec.t;
-          scan.points[row][j] = rec.point;
+          scan.ranges[i][j] = rec.t;
+          scan.points[i][j] = rec.point;
 
           logger->info("Hit @ azimuth={:.2f}°, channel={} (elev={:.2f}°) → distance={:.3f} m",
-                       scan.azimuth_angles[row], j, le.elevation_angles()[j], rec.t);
+                       scan.azimuth_angles[i], j, le.elevation_angles()[j], rec.t);
         }
       }
     }
+
+    scans[rev] = std::move(scan);
   }
 
   logger->info("Simulation complete");
 
-  return scan;
+  return scans;
 }
 
 }  // namespace percepto::sensor

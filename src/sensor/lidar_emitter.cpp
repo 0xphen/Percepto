@@ -12,10 +12,7 @@ using percepto::sensor::LidarEmitter;
 namespace percepto::sensor
 {
 LidarEmitter::LidarEmitter(int azimuth_steps, std::vector<double> elevation_angles)
-    : azimuth_steps_(azimuth_steps),
-      elevation_angles_(std::move(elevation_angles)),
-      cos_elev_(),
-      sin_elev_()
+    : azimuth_steps_(azimuth_steps), elevation_angles_(std::move(elevation_angles))
 {
   if (azimuth_steps_ <= 0) throw std::invalid_argument("azimuth_steps must be > 0");
   if (elevation_angles_.empty()) throw std::invalid_argument("elevation_angles cannot be empty");
@@ -23,17 +20,24 @@ LidarEmitter::LidarEmitter(int azimuth_steps, std::vector<double> elevation_angl
   cos_elev_.reserve(elevation_angles_.size());
   sin_elev_.reserve(elevation_angles_.size());
 
-  for (double angle : elevation_angles_)
+  for (const double& angle : elevation_angles_)
   {
     cos_elev_.push_back(std::cos(angle));
     sin_elev_.push_back(std::sin(angle));
+  }
+
+  // Precompute evenly spaced azimuth angles over a full 360° (2π radians)
+  // for all scan steps. These angles are reused across all scan revolutions.
+  azimuth_angles_.reserve(azimuth_steps);
+  for (int i = 0; i < azimuth_steps; i++)
+  {
+    azimuth_angles_.push_back(2.0 * M_PI * double(i) / double(azimuth_steps));
   }
 }
 
 percepto::core::Ray LidarEmitter::next()
 {
-  // Compute azimuth angle in [0,2π) as fraction of full rotation
-  double azimuth = two_pi * double(current_azimuth_) / double(azimuth_steps_);
+  double current_azimuth_angle = azimuth_angles_[current_azimuth_];
 
   // Pick precomputed cosφ, sinφ for this channel
   double cos_el = cos_elev_[current_channel_];
@@ -41,8 +45,8 @@ percepto::core::Ray LidarEmitter::next()
 
   // Spherical→Cartesian:
   //   x = cosφ·cosθ, y = cosφ·sinθ, z = sinφ
-  percepto::core::Vec3 dir{float(cos_el * std::cos(azimuth)), float(cos_el * std::sin(azimuth)),
-                           float(sin_el)};
+  percepto::core::Vec3 dir{float(cos_el * std::cos(current_azimuth_angle)),
+                           float(cos_el * std::sin(current_azimuth_angle)), float(sin_el)};
 
   auto ray = percepto::core::Ray{default_origin, dir, 0.0, 100.0};
 
@@ -57,7 +61,6 @@ percepto::core::Ray LidarEmitter::next()
     }
   }
 
-  auto logger = get_percepto_logger();
   return ray;
 }
 }  // namespace percepto::sensor

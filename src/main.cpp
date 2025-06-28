@@ -116,8 +116,8 @@ int main(int argc, char** argv)
   auto emitter = std::make_unique<percepto::sensor::LidarEmitter>(azimuth_steps, elevation_angles);
   percepto::sensor::LidarSimulator simulator(std::move(emitter), std::move(scene_ptr));
 
-  auto frame = simulator.run_scan(revs);
-  logger->info("Scan complete: {} hits detected", frame.hits);
+  auto scans = simulator.run_scan(revs);
+  logger->info("Scan complete");
 
   return EXIT_SUCCESS;
 }

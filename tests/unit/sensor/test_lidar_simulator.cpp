@@ -29,7 +29,9 @@ TEST(LidarSimulatorTest, SmokeTest)
   LidarSimulator sim{std::move(emitter_ptr), std::move(scene_ptr)};
 
   EXPECT_NO_THROW({
-    auto frame = sim.run_scan(1);
+    auto frames = sim.run_scan(1);
+    auto frame = frames[0];
+
     ASSERT_EQ(frame.ranges.size(), 4u);
     ASSERT_EQ(frame.points.size(), 4u);
     EXPECT_EQ(frame.hits, 0);
@@ -74,19 +76,19 @@ TEST(LidarSimulatorTest, SingleHitAndMultipleRevolutions)
 
   // ––– B. Single‐hit: one revolution –––
   {
-    auto frame1 = sim.run_scan(1);
-    EXPECT_EQ(frame1.hits, 1);
+    auto frames = sim.run_scan(1);
+    EXPECT_EQ(frames[0].hits, 1);
 
     constexpr size_t ELEV = 0;
     constexpr size_t AZ = 1;  // 45° step
     constexpr float EXP_R = 4.1727f;
 
-    float r = frame1.ranges[AZ][ELEV];
+    float r = frames[0].ranges[AZ][ELEV];
     EXPECT_NEAR(r, EXP_R, 1e-5f) << "range at elev=" << ELEV << " az=" << AZ;
 
     Vec3 dir = Vec3(7, 7, 8).normalized();
     Vec3 expect_pt = Ray{Vec3{0, 0, 0}, dir, 0, 100}.at(r);
-    Vec3 got_pt = frame1.points[AZ][ELEV];
+    Vec3 got_pt = frames[0].points[AZ][ELEV];
 
     Vec3 d = got_pt - expect_pt;
     float geo_err = std::sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
@@ -95,8 +97,8 @@ TEST(LidarSimulatorTest, SingleHitAndMultipleRevolutions)
 
   // ––– C. Multiple‐revolutions: two back‐to‐back sweeps must match –––
   {
-    auto frame2 = sim.run_scan(/*revolutions=*/2);
-    EXPECT_EQ(frame2.hits, 2);
+    auto frames = sim.run_scan(/*revolutions=*/2);
+    EXPECT_EQ(frames[0].hits, 2);
 
     constexpr size_t ELEV = 0;
     constexpr size_t AZ_STEPS = 8;
@@ -104,10 +106,10 @@ TEST(LidarSimulatorTest, SingleHitAndMultipleRevolutions)
     // First revolution is in indices [0..7], second in [8..15]
     for (size_t az = 0; az < AZ_STEPS; ++az)
     {
-      float r0 = frame2.ranges[az][ELEV];
-      Vec3 p0 = frame2.points[az][ELEV];
-      float r1 = frame2.ranges[az + AZ_STEPS][ELEV];
-      Vec3 p1 = frame2.points[az + AZ_STEPS][ELEV];
+      float r0 = frames[0].ranges[az][ELEV];
+      Vec3 p0 = frames[0].points[az][ELEV];
+      float r1 = frames[0].ranges[az + AZ_STEPS][ELEV];
+      Vec3 p1 = frames[0].points[az + AZ_STEPS][ELEV];
 
       EXPECT_FLOAT_EQ(r0, r1) << "ranges differ at az=" << az;
       EXPECT_VEC3_EQ(p0, p1);

@@ -7,7 +7,6 @@
 
 namespace percepto::sensor
 {
-
 /**
  * @brief Emits LiDAR rays by sweeping fixed elevation angles
  *        through one 360° revolution in discrete azimuth steps.
@@ -42,12 +41,15 @@ class LidarEmitter
   /// Emit the next ray; wraps around after one full revolution.
   percepto::core::Ray next();
 
+  const std::vector<double>& azimuth_angles() const { return azimuth_angles_; }
+
  private:
   int azimuth_steps_;
   int current_azimuth_ = 0;  ///< [0, azimuth_steps_)
   int current_channel_ = 0;  ///< [0, channel_count)
   std::vector<double> elevation_angles_;
   std::vector<double> cos_elev_, sin_elev_;
+  std::vector<double> azimuth_angles_;
   static constexpr double two_pi = 2.0 * M_PI;
   inline static const percepto::core::Vec3 default_origin{0.0, 0.0, 0.0};
 };
