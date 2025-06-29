@@ -106,6 +106,7 @@ TEST(LidarSimulatorTest, SingleHitAndMultipleRevolutions)
       {
         float r0 = frame.ranges[az][ELEV];
         Vec3 p0 = frame.points[az][ELEV];
+        // TODO: Add Assertion
       }
     }
   }
