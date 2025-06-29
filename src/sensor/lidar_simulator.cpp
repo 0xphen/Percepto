@@ -57,7 +57,7 @@ std::vector<FrameScan> LidarSimulator::run_scan(int revs)
       }
     }
 
-    scans[rev] = std::move(scan);
+    scans.push_back(std::move(scan));
   }
 
   logger->info("Simulation complete");

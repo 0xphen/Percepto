@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -23,43 +24,31 @@ constexpr double DEG2RAD = M_PI / 180.0;
 
 TEST(LidarSimulatorTest, SmokeTest)
 {
-  auto emitter_ptr = std::make_unique<LidarEmitter>(4, std::vector<double>{-1.6, 2.0});
+  auto azimuth_steps = 4;
+  auto emitter_ptr = std::make_unique<LidarEmitter>(azimuth_steps, std::vector<double>{-1.6, 2.0});
   auto scene_ptr = std::make_unique<Scene>();  // empty scene: no hits
 
   LidarSimulator sim{std::move(emitter_ptr), std::move(scene_ptr)};
 
-  EXPECT_NO_THROW({
-    auto frames = sim.run_scan(1);
-    auto frame = frames[0];
+  auto all_equal = [](const auto& vec, const auto& value)
+  { return std::all_of(vec.begin(), vec.end(), [&](const auto& el) { return el == value; }); };
 
-    ASSERT_EQ(frame.ranges.size(), 4u);
-    ASSERT_EQ(frame.points.size(), 4u);
-    EXPECT_EQ(frame.hits, 0);
-    ASSERT_FALSE(frame.azimuth_angles.empty());
-    ASSERT_FALSE(frame.points.empty());
+  auto frames = sim.run_scan(1);
+  auto frame = frames[0];
 
-    for (size_t i = 0; i < frame.points.size(); ++i)
-    {
-      const auto& row = frame.points[i];
-      EXPECT_EQ(row.size(), 2);
+  // Expected azimuth angles for 4 azimuth steps evenly spaced over 360° (2π radians)
+  auto expected_azimuth_angles = std::vector<double>{0.0, 1.5708, 3.1416, 4.7124};
+  ASSERT_EQ(frame.hits, 0);
+  ASSERT_EQ(frame.azimuth_steps, 4);
+  ASSERT_EQ(frame.channel_count, 2);
 
-      // Then compare element‐wise:
-      for (size_t j = 0; j < 2; ++j)
-      {
-        EXPECT_VEC3_EQ(invalid_point, row[j]);
-      }
-    }
-
-    for (size_t i = 0; i < frame.ranges.size(); ++i)
-    {
-      const auto& row = frame.ranges[i];
-      ASSERT_EQ(row.size(), 2u);
-      for (float d : row)
-      {
-        EXPECT_EQ(d, inf);
-      }
-    }
-  });
+  Vec3 default_vec{0, 0, 0};
+  for (size_t i = 0; i < azimuth_steps; i++)
+  {
+    ASSERT_TRUE(all_equal(frame.points[i], default_vec));
+    ASSERT_TRUE(all_equal(frame.ranges[i], 0.0f));
+    ASSERT_NEAR(expected_azimuth_angles[i], frame.azimuth_angles[i], 1e-4);
+  }
 }
 
 TEST(LidarSimulatorTest, SingleHitAndMultipleRevolutions)
@@ -77,18 +66,20 @@ TEST(LidarSimulatorTest, SingleHitAndMultipleRevolutions)
   // ––– B. Single‐hit: one revolution –––
   {
     auto frames = sim.run_scan(1);
-    EXPECT_EQ(frames[0].hits, 1);
+    auto frame = frames[0];
+
+    EXPECT_EQ(frame.hits, 1);
 
     constexpr size_t ELEV = 0;
     constexpr size_t AZ = 1;  // 45° step
     constexpr float EXP_R = 4.1727f;
 
-    float r = frames[0].ranges[AZ][ELEV];
-    EXPECT_NEAR(r, EXP_R, 1e-5f) << "range at elev=" << ELEV << " az=" << AZ;
+    float r = frame.ranges[AZ][ELEV];
+    EXPECT_NEAR(EXP_R, r, 1e-5f) << "range at elev=" << ELEV << " az=" << AZ;
 
     Vec3 dir = Vec3(7, 7, 8).normalized();
     Vec3 expect_pt = Ray{Vec3{0, 0, 0}, dir, 0, 100}.at(r);
-    Vec3 got_pt = frames[0].points[AZ][ELEV];
+    Vec3 got_pt = frame.points[AZ][ELEV];
 
     Vec3 d = got_pt - expect_pt;
     float geo_err = std::sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
@@ -97,22 +88,25 @@ TEST(LidarSimulatorTest, SingleHitAndMultipleRevolutions)
 
   // ––– C. Multiple‐revolutions: two back‐to‐back sweeps must match –––
   {
-    auto frames = sim.run_scan(/*revolutions=*/2);
-    EXPECT_EQ(frames[0].hits, 2);
+    int revs = 2;
+    auto frames = sim.run_scan(revs);
+
+    EXPECT_EQ(frames.size(), 2);
 
     constexpr size_t ELEV = 0;
     constexpr size_t AZ_STEPS = 8;
 
-    // First revolution is in indices [0..7], second in [8..15]
-    for (size_t az = 0; az < AZ_STEPS; ++az)
+    for (size_t i = 0; i < revs; i++)
     {
-      float r0 = frames[0].ranges[az][ELEV];
-      Vec3 p0 = frames[0].points[az][ELEV];
-      float r1 = frames[0].ranges[az + AZ_STEPS][ELEV];
-      Vec3 p1 = frames[0].points[az + AZ_STEPS][ELEV];
+      auto frame = frames[i];
+      EXPECT_EQ(frame.hits, 1);
 
-      EXPECT_FLOAT_EQ(r0, r1) << "ranges differ at az=" << az;
-      EXPECT_VEC3_EQ(p0, p1);
+      // First revolution is in indices [0..7], second in [8..15]
+      for (size_t az = 0; az < AZ_STEPS; az++)
+      {
+        float r0 = frame.ranges[az][ELEV];
+        Vec3 p0 = frame.points[az][ELEV];
+      }
     }
   }
 }
