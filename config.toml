@@ -1,4 +1,22 @@
-[scan]
-revs = 1
-azimuth_steps = 36
-elevation_angles = [0, 15, 30]
+# config.toml
+# LiDAR Sensor Configuration
+[LIDAR_SENSOR]
+azimuth_steps = 3600 # Number of horizontal steps for the laser
+elevation_angles = [ # Vertical angles (radians) for each laser channel
+    0.1863, 0.1629, 0.1398, 0.1166, 0.0934, 0.0702, 0.0470, 0.0237,
+    0.0005, -0.0227, -0.0459, -0.0692, -0.0924, -0.1156, -0.1388, -0.1620,
+    -0.1852, -0.2084, -0.2316, -0.2548, -0.2780, -0.3012, -0.3244, -0.3476,
+    -0.3708, -0.3940, -0.4172, -0.4404, -0.4636, -0.4868, -0.5100, -0.5332
+]
+
+# Scene Generation Configuration (used by Python script)
+[SCENE_GENERATION]
+target_vertices = 100000
+dense_radius = 1000.0
+sparse_radius = 5000.0
+angular_margin = 0.1 # Radians, for scene elevation padding
+
+# Ray Tracer Configuration (used by C++ simulator/benchmarks)
+[RAY_TRACER]
+ray_t_min = 0.0
+ray_t_max = 2000.0

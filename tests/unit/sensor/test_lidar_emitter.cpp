@@ -3,9 +3,10 @@
 #include <cmath>
 #include <vector>
 
+#include "percepto/core/config_loader.h"
 #include "percepto/sensor/lidar_emitter.h"
 
-using percepto::sensor::LidarEmitter;
+using percepto::sensor::LidarEmitter, percepto::core::LiDARConfig;
 
 namespace
 {
@@ -24,8 +25,7 @@ std::vector<percepto::core::Vec3> collect_dirs(LidarEmitter& e, size_t count)
 
 TEST(LidarEmitterTest, Construction_StoresParametersAndTrigTables)
 {
-  std::vector<double> elevations = {-0.1, 0.67};
-  LidarEmitter emitter(360, elevations);
+  LidarEmitter emitter(LiDARConfig{360, {-0.1, 0.67}});
 
   // Stored parameters
   // EXPECT_EQ(emitter.azimuth_steps(), 360);
@@ -49,13 +49,14 @@ TEST(LidarEmitterTest, Construction_StoresParametersAndTrigTables)
 
 TEST(LidarEmitterTest, ThrowsOnInvalidConstructorArgs)
 {
-  EXPECT_THROW(LidarEmitter(0, std::vector<double>{0.0, 0.5}), std::invalid_argument);
-  EXPECT_THROW(LidarEmitter(360, std::vector<double>{}), std::invalid_argument);
+  EXPECT_THROW(LidarEmitter emitter(LiDARConfig{0, {0.0, 0.5}}), std::invalid_argument);
+
+  EXPECT_THROW(LidarEmitter emitter(LiDARConfig{0, {}}), std::invalid_argument);
 }
 
 TEST(LidarEmitterTest, ResetReturnsToStart)
 {
-  LidarEmitter e(4, {-0.2, +0.2});
+  LidarEmitter e(LiDARConfig{4, {-0.2, +0.2}});
   auto first_three = collect_dirs(e, 3);
   collect_dirs(e, 2);
   e.reset();
@@ -65,7 +66,8 @@ TEST(LidarEmitterTest, ResetReturnsToStart)
 
 TEST(LidarEmitterTest, FullRevolutionWrapsCorrectly)
 {
-  LidarEmitter e(3, {0.0, 0.5, -0.5});
+  LidarEmitter e(LiDARConfig{3, {0.0, 0.5, -0.5}});
+
   auto all_dirs = collect_dirs(e, 9);
   auto wrap = e.next().direction();
   // Compare component-wise to avoid relying on operator==
@@ -76,7 +78,8 @@ TEST(LidarEmitterTest, FullRevolutionWrapsCorrectly)
 
 TEST(LidarEmitterTest, DirectionsAreUnitLength)
 {
-  LidarEmitter e(16, {-0.2, 0.0, 0.2});
+  LidarEmitter e(LiDARConfig{16, {-0.2, 0.0, 0.2}});
+
   for (int i = 0; i < 16 * 3; ++i)
   {
     auto d = e.next().direction();
@@ -87,7 +90,8 @@ TEST(LidarEmitterTest, DirectionsAreUnitLength)
 
 TEST(LidarEmitterTest, SingleChannelOnlyAzimuthAdvances)
 {
-  LidarEmitter e(5, {0.1});
+  LidarEmitter e(LiDARConfig{5, {0.1}});
+
   float expectedZ = std::sin(0.1);
   for (int i = 0; i < 5; ++i)
   {
@@ -100,7 +104,7 @@ TEST(LidarEmitterTest, SingleAzimuthOnlyChannelCycles)
 {
   // One azimuth step, four elevation channels:
   std::vector<double> elevs = {-0.3, -0.1, 0.1, 0.3};
-  LidarEmitter e(1, elevs);
+  LidarEmitter e(LiDARConfig{1, elevs});
 
   // Emit exactly one full set of rays (4 of them):
   auto dirs = collect_dirs(e, elevs.size());
@@ -127,7 +131,7 @@ TEST(LidarEmitterTest, SingleAzimuthOnlyChannelCycles)
 
 TEST(LidarEmitterTest, MultipleRevolutionsSafe)
 {
-  LidarEmitter e(2, {0.0, 0.5, -0.5});
+  LidarEmitter e(LiDARConfig{2, {0.0, 0.5, -0.5}});
   auto first = collect_dirs(e, 6);
   auto second = collect_dirs(e, 6);
   EXPECT_EQ(second, first);

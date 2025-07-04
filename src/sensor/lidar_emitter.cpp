@@ -2,6 +2,7 @@
 #include <cmath>
 #include <system_error>
 
+#include "percepto/core/config_loader.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
 #include "percepto/io/logger.h"
@@ -11,8 +12,9 @@ using percepto::sensor::LidarEmitter;
 
 namespace percepto::sensor
 {
-LidarEmitter::LidarEmitter(int azimuth_steps, std::vector<double> elevation_angles)
-    : azimuth_steps_(azimuth_steps), elevation_angles_(std::move(elevation_angles))
+LidarEmitter::LidarEmitter(percepto::core::LiDARConfig lidar_cfg)
+    : azimuth_steps_(lidar_cfg.azimuth_steps),
+      elevation_angles_(std::move(lidar_cfg.elevation_angles))
 {
   if (azimuth_steps_ <= 0) throw std::invalid_argument("azimuth_steps must be > 0");
   if (elevation_angles_.empty()) throw std::invalid_argument("elevation_angles cannot be empty");
@@ -28,10 +30,10 @@ LidarEmitter::LidarEmitter(int azimuth_steps, std::vector<double> elevation_angl
 
   // Precompute evenly spaced azimuth angles over a full 360° (2π radians)
   // for all scan steps. These angles are reused across all scan revolutions.
-  azimuth_angles_.reserve(azimuth_steps);
-  for (int i = 0; i < azimuth_steps; i++)
+  azimuth_angles_.reserve(lidar_cfg.azimuth_steps);
+  for (int i = 0; i < lidar_cfg.azimuth_steps; i++)
   {
-    azimuth_angles_.push_back(2.0 * M_PI * double(i) / double(azimuth_steps));
+    azimuth_angles_.push_back(2.0 * M_PI * double(i) / double(lidar_cfg.azimuth_steps));
   }
 }
 
@@ -48,7 +50,7 @@ percepto::core::Ray LidarEmitter::next()
   percepto::core::Vec3 dir{float(cos_el * std::cos(current_azimuth_angle)),
                            float(cos_el * std::sin(current_azimuth_angle)), float(sin_el)};
 
-  auto ray = percepto::core::Ray{default_origin, dir, 0.0, 100.0};
+  auto ray = percepto::core::Ray{default_origin, dir};
 
   // Advance channel first (inner loop)
   if (++current_channel_ == int(elevation_angles_.size()))

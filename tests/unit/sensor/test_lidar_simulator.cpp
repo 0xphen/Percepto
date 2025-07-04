@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 
+#include "percepto/core/config_loader.h"
 #include "percepto/core/scene.h"
 #include "percepto/core/vec3.h"
 #include "percepto/math/intersection/moller_trumbore.h"
@@ -13,7 +14,7 @@
 #include "percepto/sensor/lidar_simulator.h"
 #include "test_helpers.h"
 
-using percepto::core::Scene;
+using percepto::core::Scene, percepto::core::LiDARConfig;
 using percepto::core::Vec3, percepto::core::Ray, percepto::geometry::Triangle;
 using percepto::sensor::LidarEmitter;
 using percepto::sensor::LidarSimulator;
@@ -25,7 +26,7 @@ constexpr double DEG2RAD = M_PI / 180.0;
 TEST(LidarSimulatorTest, SmokeTest)
 {
   auto azimuth_steps = 4;
-  auto emitter_ptr = std::make_unique<LidarEmitter>(azimuth_steps, std::vector<double>{-1.6, 2.0});
+  auto emitter_ptr = std::make_unique<LidarEmitter>(LiDARConfig{azimuth_steps, {-1.6, 2.0}});
   auto scene_ptr = std::make_unique<Scene>();  // empty scene: no hits
 
   LidarSimulator sim{std::move(emitter_ptr), std::move(scene_ptr)};
@@ -54,7 +55,7 @@ TEST(LidarSimulatorTest, SmokeTest)
 TEST(LidarSimulatorTest, SingleHitAndMultipleRevolutions)
 {
   // ––– Setup: 1‐channel LiDAR at elevation 38.9° (rad), 8 azimuth steps (45° each) –––
-  auto emitter_ptr = std::make_unique<LidarEmitter>(8, std::vector<double>{38.9 * DEG2RAD});
+  auto emitter_ptr = std::make_unique<LidarEmitter>(LiDARConfig{8, {38.9 * DEG2RAD}});
 
   // ––– Scene: one triangle –––
   auto scene_ptr = std::make_unique<Scene>();

@@ -8,6 +8,7 @@
 #include <tuple>
 #include <vector>
 
+#include "percepto/core/config_loader.h"
 #include "percepto/core/scene.h"
 #include "percepto/geometry/triangle.h"
 #include "percepto/io/csv_parser.h"
@@ -106,17 +107,27 @@ int main(int argc, char** argv)
   // ----------------------------------------
   // ⚙️ Configuration Loading
   // ----------------------------------------
-  auto [revs, azimuth_steps, elevation_angles] = load_config();
-  logger->info("Loaded config: revs = {}, azimuth_steps = {}", revs, azimuth_steps);
-  logger->info("Elevation angles: [{}]", fmt::join(elevation_angles, ", "));
+  percepto::core::LiDARConfig lidar_cfg;
+  try
+  {
+    lidar_cfg = percepto::core::ConfigLoader::loadLiDARConfig("config.toml");
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "Failed to load configuration: " << e.what() << std::endl;
+    return 1;
+  }
+
+  logger->info("Loaded config: azimuth_steps = {}", lidar_cfg.azimuth_steps);
+  logger->info("Elevation angles: [{}]", fmt::join(lidar_cfg.elevation_angles, ", "));
 
   // ----------------------------------------
   // 📡 LiDAR Setup & Simulation
   // ----------------------------------------
-  auto emitter = std::make_unique<percepto::sensor::LidarEmitter>(azimuth_steps, elevation_angles);
+  auto emitter = std::make_unique<percepto::sensor::LidarEmitter>(std::move(lidar_cfg));
   percepto::sensor::LidarSimulator simulator(std::move(emitter), std::move(scene_ptr));
 
-  auto scans = simulator.run_scan(revs);
+  auto scans = simulator.run_scan();
   logger->info("Scan complete");
 
   return EXIT_SUCCESS;

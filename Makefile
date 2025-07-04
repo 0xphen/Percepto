@@ -33,4 +33,4 @@ test: build
 # Format all source, header, and test files using clang-format
 format:
 	@echo "🎨 Formatting all C++ source and header files recursively..."
-	find src include tests benchmark -name '*.cpp' -o -name '*.h' | xargs clang-format -i
+	find src include tests benches -name '*.cpp' -o -name '*.h' | xargs clang-format -i

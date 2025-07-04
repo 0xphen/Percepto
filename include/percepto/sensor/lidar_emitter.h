@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "percepto/core/config_loader.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
 
@@ -15,10 +16,9 @@ class LidarEmitter
 {
  public:
   /**
-   * @param azimuth_steps     Number of discrete azimuth steps per 360°.
-   * @param elevation_angles  Elevation angles (radians) for each laser channel.
+   * @param lidar_cfg     Lidar config.
    */
-  LidarEmitter(int azimuth_steps, std::vector<double> elevation_angles);
+  LidarEmitter(percepto::core::LiDARConfig lidar_cfg);
 
   /// Start a new scan (reset both azimuth and channel indices).
   void reset()

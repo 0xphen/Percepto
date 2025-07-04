@@ -81,5 +81,5 @@ target_link_libraries(percepto
 
 enable_testing()
 add_subdirectory(tests)
-add_subdirectory(benchmark)
+add_subdirectory(benches)
 

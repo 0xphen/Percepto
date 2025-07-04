@@ -35,7 +35,7 @@ class Ray
   // This avoids division by zero or producing NaNs in ray calculations.
   static constexpr double kMinDirectionLengthSquared = 1e-12;
 
-  Ray(const Vec3& origin, const Vec3& direction, double t_min, double t_max)
+  Ray(const Vec3& origin, const Vec3& direction, double t_min = 0.0, double t_max = 2000.0)
       : origin_(origin), t_min_(t_min), t_max_(t_max)
   {
     Ray::validateRayDirection(direction);
