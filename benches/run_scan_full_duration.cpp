@@ -66,9 +66,10 @@ int main(int argc, char** argv)
   }
 
   percepto::core::LiDARConfig lidar_cfg;
+  resolve_scene_path(argv[0], file_name).string();
   try
   {
-    lidar_cfg = percepto::core::ConfigLoader::loadLiDARConfig("config.toml");
+    lidar_cfg = percepto::core::ConfigLoader::loadLiDARConfig();
   }
   catch (const std::exception& e)
   {

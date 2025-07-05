@@ -1,4 +1,5 @@
 #include <filesystem>
+#include <format>
 #include <iostream>
 #include <toml++/toml.hpp>
 
@@ -7,74 +8,79 @@
 
 using percepto::core::ConfigLoader, percepto::core::LiDARConfig;
 
+constexpr const char* DEFAULT_CONFIG = "config.toml";
+
 namespace percepto::core
 {
 // Helper function to find the config file, useful if executable isn't run from root
-std::string ConfigLoader::get_config_filepath(const std::string& base_filename)
+std::string ConfigLoader::get_config_filepath()
 {
-  // This assumes the config.toml is either in the current working directory
-  // or in the parent directory (project root) if run from build/benches/
-  std::string path = base_filename;
-  if (std::filesystem::exists(path))
-  {
-    return path;
-  }
-  path = "../" + base_filename;
-  if (std::filesystem::exists(path))
-  {
-    return path;
-  }
-  path = "../../" + base_filename;
-  if (std::filesystem::exists(path))
-  {
-    return path;
-  }
-  return base_filename;  // Return original path if not found, let load function error
-}
+  std::filesystem::path exe_path;
 
-LiDARConfig ConfigLoader::loadLiDARConfig(const std::string& filepath_base)
-{
-  LiDARConfig config_data;
-  std::string filepath = get_config_filepath(filepath_base);
+  std::filesystem::path current_path = std::filesystem::current_path();
+  std::filesystem::path config_candidate_path;
+
+  config_candidate_path = current_path / DEFAULT_CONFIG;
+  if (std::filesystem::exists(config_candidate_path))
+  {
+    return config_candidate_path.string();
+  }
+
+  config_candidate_path = current_path.parent_path() / DEFAULT_CONFIG;
+  if (std::filesystem::exists(config_candidate_path))
+  {
+    return config_candidate_path.string();
+  }
+
+  config_candidate_path = current_path.parent_path().parent_path() / DEFAULT_CONFIG;
+  if (std::filesystem::exists(config_candidate_path))
+  {
+    return config_candidate_path.string();
+  }
 
   auto logger = get_percepto_logger();
+  logger->error(
+      "Config file '{}' not found at expected locations relative to CWD. "
+      "Tried: {}, {}, {}",
+      DEFAULT_CONFIG, (current_path / DEFAULT_CONFIG).string(),
+      (current_path.parent_path() / DEFAULT_CONFIG).string(),
+      (current_path.parent_path().parent_path() / DEFAULT_CONFIG).string());
+
+  throw std::runtime_error(std::string("Config file '") + DEFAULT_CONFIG + "' not found.");
+}
+
+LiDARConfig ConfigLoader::loadLiDARConfig()
+{
+  LiDARConfig config_data;
+  std::string filepath = get_config_filepath();
+
+  auto logger = get_percepto_logger();
+
+  toml::table tbl;
   try
   {
-    auto config = toml::parse_file(filepath);
-    const auto& lidar_sensor = *config["LIDAR_SENSOR"].as_table();
+    tbl = toml::parse_file(filepath);
+  }
+  catch (const toml::parse_error& err)
+  {
+    logger->error("Error parsing file {}: {}", filepath, err.description());
+  }
 
-    // Read the number of azimuth steps; default to 36 (i.e., 10° increments for a full circle)
-    config_data.azimuth_steps = lidar_sensor["azimuth_steps"].value_or(36);
+  config_data.azimuth_steps = tbl["LIDAR_SENSOR"]["azimuth_steps"].value_or(36);
 
-    if (auto elevation_array_node = lidar_sensor["elevation_angles"].as_array())
+  auto elevation_angles = tbl["LIDAR_SENSOR"]["elevation_angles"];
+  if (toml::array* arr = elevation_angles.as_array())
+  {
+    for (const auto& v : *arr)
     {
-      for (const auto& v : *elevation_array_node)
-      {
-        if (auto angle = v.value<int>())
-        {
-          config_data.elevation_angles.push_back(*angle);
-        }
-      }
-    }
-    else
-    {
-      // 'elevation_angles' key is missing or not an array, use default empty vector
-      logger->error(
-          "Warning: 'elevation_angles' in LIDAR_SENSOR is missing or not an array. Using empty "
-          "vector.");
-      config_data.elevation_angles = {};  // Default to an empty vector
+      config_data.elevation_angles.push_back(*v.value<double>());
     }
   }
-  catch (const toml::parse_error& e)
+  else
   {
-    logger->error("Error parsing TOML file {}: {}", filepath, e.description());
-    throw;  // Re-throw to indicate failure
+    config_data.elevation_angles = {};  // defualt to empty array
   }
-  catch (const std::exception& e)
-  {
-    logger->error("Error reading LiDAR config from {}: {}", filepath, e.what());
-    throw;
-  }
+
   return config_data;
 }
 }  // namespace percepto::core

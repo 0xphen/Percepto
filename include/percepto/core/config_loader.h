@@ -20,11 +20,11 @@ struct RayTracerConfig
 class ConfigLoader
 {
  public:
-  static LiDARConfig loadLiDARConfig(const std::string& filepath);
+  static LiDARConfig loadLiDARConfig();
   static RayTracerConfig loadRayTracerConfig(const std::string& filepath);
 
  private:
   // Helper to get the full path to config.toml from where executable runs
-  static std::string get_config_filepath(const std::string& base_filename);
+  static std::string get_config_filepath();
 };
 }  // namespace percepto::core

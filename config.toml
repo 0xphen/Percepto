@@ -1,4 +1,3 @@
-# config.toml
 # LiDAR Sensor Configuration
 [LIDAR_SENSOR]
 azimuth_steps = 3600 # Number of horizontal steps for the laser

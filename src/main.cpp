@@ -19,46 +19,6 @@
 using namespace std;
 
 /**
- * @brief Loads LiDAR scan configuration from 'config.toml'.
- * @return Tuple containing (revs, azimuth_steps, elevation_angles).
- *
- * Reads the [scan] table and extracts:
- *   - revs: number of revolutions (default: 1)
- *   - azimuth_steps: number of azimuth steps (default: 36)
- *   - elevation_angles: vector of elevation angles (default: {30, 15, 25, -15, 30})
- */
-std::tuple<int, int, std::vector<double>> load_config()
-{
-  auto config = toml::parse_file("config.toml");
-  const auto& scan = *config["scan"].as_table();
-
-  // Read number of revolutions; default to 1 if not specified
-  int revs = scan["revs"].value_or(1);
-
-  // Read the number of azimuth steps; default to 36 (i.e., 10° increments for a full circle)
-  int azimuth_steps = scan["azimuth_steps"].value_or(36);
-
-  // Read the elevation angles array; if not present, use a default set
-  std::vector<double> elevation_angles;
-  if (auto arr = scan["elevation_angles"].as_array())
-  {
-    for (const auto& v : *arr)
-    {
-      if (auto angle = v.value<int>())
-      {
-        elevation_angles.push_back(*angle);
-      }
-    }
-  }
-  else
-  {
-    elevation_angles = {30, 15, 25, -15, 30};  // Default angles if not specified in config
-  }
-
-  return std::make_tuple(revs, azimuth_steps, elevation_angles);
-}
-
-/**
  * @brief Entry point for the Percepto LiDAR simulation application.
  * Loads scene geometry, reads configuration, and performs LiDAR scan simulation.
  */
@@ -110,7 +70,7 @@ int main(int argc, char** argv)
   percepto::core::LiDARConfig lidar_cfg;
   try
   {
-    lidar_cfg = percepto::core::ConfigLoader::loadLiDARConfig("config.toml");
+    lidar_cfg = percepto::core::ConfigLoader::loadLiDARConfig();
   }
   catch (const std::exception& e)
   {
