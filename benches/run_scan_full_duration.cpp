@@ -89,7 +89,7 @@ int main(int argc, char** argv)
   percepto::sensor::LidarSimulator sim(std::move(emitter_ptr), std::move(scene_ptr));
 
   std::cout << "LiDARScanner initialized with " << sim.emitter().azimuth_steps()
-            << " azimuth steps and " << sim.emitter().azimuth_angles().size()
+            << " azimuth steps and " << sim.emitter().elevation_angles().size()
             << " elevation channels." << std::endl;
 
   auto start = high_resolution_clock::now();

@@ -1,7 +1,0 @@
-Hits: 115200
-Azimuth steps: 3600
-Rays per step: 32
-Total rays cast: 115200
-Total triangles in scene: 187200
-Scan took: 253134 ms (253.134000 s)
-Rays per second: 455.094930
