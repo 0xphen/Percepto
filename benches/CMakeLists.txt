@@ -1,22 +1,33 @@
-# benches/CMakeLists.txt
+cmake_minimum_required(VERSION 3.16)
+project(percepto_benchmarks LANGUAGES CXX)
 
-# Find all .cpp files in this folder
-file(GLOB BENCHMARK_FILES CONFIGURE_DEPENDS *.cpp)
+set(GOOGLE_BENCHMARK_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/moller_trumbore_benchmarks.cpp
+)
 
-# Loop over each file and build a separate executable
-foreach(file ${BENCHMARK_FILES})
-  get_filename_component(fname ${file} NAME_WE)
+add_executable(percepto_micro_benchmarks ${GOOGLE_BENCHMARK_SOURCES})
 
-  add_executable(${fname} ${file})
-
-  target_link_libraries(${fname}
+target_link_libraries(percepto_micro_benchmarks
     PRIVATE
-      benchmark       # Linked because of FetchContent in root
-      percepto_lib    # Your core simulation library
-  )
+        benchmark 
+        percepto_sensor
+        tomlplusplus::tomlplusplus
+        spdlog::spdlog
+)
 
-  target_include_directories(${fname}
+target_include_directories(percepto_micro_benchmarks PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/../include 
+  ${benchmark_SOURCE_DIR}/include
+)
+
+add_executable(run_scan_full_duration ${CMAKE_CURRENT_SOURCE_DIR}/run_scan_full_duration.cpp)
+
+target_link_libraries(run_scan_full_duration
     PRIVATE
-      ${CMAKE_SOURCE_DIR}/include
-  )
-endforeach()
+        percepto_sensor
+        tomlplusplus::tomlplusplus
+        spdlog::spdlog
+)
+target_include_directories(run_scan_full_duration PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/../include
+)
