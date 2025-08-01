@@ -3,17 +3,17 @@
 #include <stdexcept>
 #include <system_error>
 
-#include "percepto/core/config_loader.h"
+#include "percepto/common/config_loader.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
 #include "percepto/io/logger.h"
-#include "percepto/sensor/lidar_emitter.h"
+#include "percepto/lidar/emitter.h"
 
-using percepto::sensor::LidarEmitter;
+using percepto::lidar::LidarEmitter;
 
-namespace percepto::sensor
+namespace percepto::lidar
 {
-LidarEmitter::LidarEmitter(percepto::core::LiDARConfig lidar_cfg)
+LidarEmitter::LidarEmitter(percepto::common::LiDARConfig lidar_cfg)
     : elevation_angles_(std::move(lidar_cfg.elevation_angles))
 {
   if (elevation_angles_.empty()) throw std::invalid_argument("elevation_angles cannot be empty");
@@ -61,4 +61,4 @@ percepto::core::Ray LidarEmitter::get_ray(const int i, const int j)
   return percepto::core::Ray{default_origin, dir};
 }
 
-}  // namespace percepto::sensor
+}  // namespace percepto::lidar

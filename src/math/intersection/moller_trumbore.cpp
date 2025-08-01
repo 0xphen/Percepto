@@ -1,9 +1,9 @@
 #include <optional>
 
+#include "percepto/common/types.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
 #include "percepto/math/intersection/moller_trumbore.h"
-#include "percepto/types.h"
 
 using namespace percepto::core;
 
@@ -51,7 +51,7 @@ std::optional<TriangleHitResult> moller_trumbore(const Vec3& v0, const Vec3& v1,
   double det = edgeAB.dot(p);
 
   // If det is near zero, the ray is parallel to the triangle plane
-  if (det < EPSILON) return std::nullopt;
+  if (det < common::EPSILON) return std::nullopt;
 
   double invDet = 1.0 / det;
 

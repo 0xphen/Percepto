@@ -2,11 +2,11 @@
 
 #include <vector>
 
-#include "percepto/core/config_loader.h"
+#include "percepto/common/config_loader.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
 
-namespace percepto::sensor
+namespace percepto::lidar
 {
 /**
  * @brief Emits LiDAR rays by sweeping fixed elevation angles
@@ -18,7 +18,7 @@ class LidarEmitter
   /**
    * @param lidar_cfg     Lidar config.
    */
-  LidarEmitter(percepto::core::LiDARConfig lidar_cfg);
+  LidarEmitter(percepto::common::LiDARConfig lidar_cfg);
 
   /// Returns the number of azimuth steps this emitter was configured with.
   int azimuth_steps() const { return azimuth_angles_.size(); }
@@ -53,4 +53,4 @@ class LidarEmitter
   inline static const percepto::core::Vec3 default_origin{0.0, 0.0, 0.0};
 };
 
-}  // namespace percepto::sensor
+}  // namespace percepto::lidar

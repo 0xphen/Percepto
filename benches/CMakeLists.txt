@@ -10,7 +10,7 @@ add_executable(percepto_micro_benchmarks ${GOOGLE_BENCHMARK_SOURCES})
 target_link_libraries(percepto_micro_benchmarks
     PRIVATE
         benchmark 
-        percepto_sensor
+        percepto_lidar
         tomlplusplus::tomlplusplus
         spdlog::spdlog
 )
@@ -24,7 +24,7 @@ add_executable(run_scan_full_duration ${CMAKE_CURRENT_SOURCE_DIR}/run_scan_full_
 
 target_link_libraries(run_scan_full_duration
     PRIVATE
-        percepto_sensor
+        percepto_lidar
         tomlplusplus::tomlplusplus
         spdlog::spdlog
 )

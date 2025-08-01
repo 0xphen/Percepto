@@ -10,11 +10,11 @@
 #include <toml++/toml.hpp>
 #include <vector>
 
-#include "percepto/core/config_loader.h"
+#include "percepto/common/config_loader.h"
 #include "percepto/io/csv_parser.h"
 #include "percepto/io/logger.h"
-#include "percepto/sensor/lidar_emitter.h"
-#include "percepto/sensor/lidar_simulator.h"
+#include "percepto/lidar/emitter.h"
+#include "percepto/lidar/simulator.h"
 
 using namespace std::chrono;
 namespace fs = std::filesystem;
@@ -65,11 +65,11 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  percepto::core::LiDARConfig lidar_cfg;
+  percepto::common::LiDARConfig lidar_cfg;
   resolve_scene_path(argv[0], file_name).string();
   try
   {
-    lidar_cfg = percepto::core::ConfigLoader::loadLiDARConfig();
+    lidar_cfg = percepto::common::ConfigLoader::loadLiDARConfig();
   }
   catch (const std::exception& e)
   {
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  auto emitter_ptr = std::make_unique<percepto::sensor::LidarEmitter>(std::move(lidar_cfg));
+  auto emitter_ptr = std::make_unique<percepto::lidar::LidarEmitter>(std::move(lidar_cfg));
 
   percepto::io::CsvParser parser;
   std::cout << "Loading scene from: " << file_name << std::endl;
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
 
   int total_rays = emitter_ptr->azimuth_steps() * emitter_ptr->elevation_angles().size();
 
-  percepto::sensor::LidarSimulator sim(std::move(emitter_ptr), std::move(scene_ptr));
+  percepto::lidar::LidarSimulator sim(std::move(emitter_ptr), std::move(scene_ptr));
 
   std::cout << "LiDARScanner initialized with " << sim.emitter().azimuth_steps()
             << " azimuth steps and " << sim.emitter().elevation_angles().size()

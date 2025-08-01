@@ -89,19 +89,19 @@ target_link_libraries(percepto_scene PRIVATE
 )
 add_percepto_common_settings(percepto_scene)
 
-add_library(percepto_sensor STATIC
-  src/sensor/lidar_emitter.cpp
-  src/sensor/lidar_simulator.cpp
+add_library(percepto_lidar STATIC
+  src/lidar/emitter.cpp
+  src/lidar/simulator.cpp
 )
-target_include_directories(percepto_sensor PUBLIC
+target_include_directories(percepto_lidar PUBLIC
   ${PERCEPTO_GLOBAL_INCLUDE_DIR}
 )
-target_link_libraries(percepto_sensor PRIVATE
+target_link_libraries(percepto_lidar PRIVATE
   percepto_core
   percepto_scene
   spdlog::spdlog
 )
-add_percepto_common_settings(percepto_sensor)
+add_percepto_common_settings(percepto_lidar)
 
 add_executable(percepto
   src/main.cpp
@@ -110,7 +110,7 @@ target_include_directories(percepto PRIVATE
   ${PERCEPTO_GLOBAL_INCLUDE_DIR}
 )
 target_link_libraries(percepto PRIVATE
-  percepto_sensor
+  percepto_lidar
   CLI11::CLI11 
   tomlplusplus::tomlplusplus
   spdlog::spdlog

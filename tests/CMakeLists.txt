@@ -17,7 +17,7 @@ target_include_directories(percepto_tests PRIVATE
 
 target_link_libraries(percepto_tests PRIVATE
     gtest_main
-    percepto_sensor       
+    percepto_lidar       
 )
 
 add_custom_command(TARGET percepto_tests PRE_BUILD

@@ -4,7 +4,7 @@
 
 #include "percepto/core/vec3.h"
 
-namespace percepto::sensor
+namespace percepto::common
 {
 struct FrameScan
 {
@@ -45,4 +45,4 @@ struct FrameScan
   {
   }
 };
-}  // namespace percepto::sensor
+}  // namespace percepto::common

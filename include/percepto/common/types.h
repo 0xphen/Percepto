@@ -2,7 +2,7 @@
 
 #include "percepto/core/vec3.h"
 
-namespace percepto
+namespace percepto::common
 {
 inline constexpr double EPSILON = 1e-6;
 
@@ -32,4 +32,4 @@ enum class SceneFormat
   GLTF,  ///< glTF 2.0 format
   JSON   ///< JSON‐based scene description
 };
-}  // namespace percepto
+}  // namespace percepto::common

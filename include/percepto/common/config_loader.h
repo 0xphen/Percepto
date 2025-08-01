@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace percepto::core
+namespace percepto::common
 {
 struct LiDARConfig
 {
@@ -27,4 +27,4 @@ class ConfigLoader
   // Helper to get the full path to config.toml from where executable runs
   static std::string get_config_filepath();
 };
-}  // namespace percepto::core
+}  // namespace percepto::common

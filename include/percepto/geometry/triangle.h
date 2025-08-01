@@ -4,10 +4,9 @@
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
 #include "percepto/math/intersection/moller_trumbore.h"
-#include "percepto/types.h"
 
 using percepto::core::Vec3, percepto::core::Ray, percepto::math::intersection::moller_trumbore,
-    percepto::HitRecord;
+    percepto::common::HitRecord;
 
 namespace percepto::geometry
 {

@@ -3,13 +3,13 @@
 #include <cmath>
 #include <vector>
 
-#include "percepto/core/config_loader.h"
+#include "percepto/common/config_loader.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
-#include "percepto/sensor/lidar_emitter.h"
+#include "percepto/lidar/emitter.h"
 #include "test_helpers.h"
 
-using percepto::sensor::LidarEmitter, percepto::core::LiDARConfig, percepto::core::Vec3,
+using percepto::lidar::LidarEmitter, percepto::common::LiDARConfig, percepto::core::Vec3,
     percepto::core::Ray;
 
 percepto::core::Ray calculate_expected_ray(int i, int j, int azimuth_steps,
@@ -35,17 +35,14 @@ TEST(LidarEmitterTest, Construction_StoresParametersAndTrigTables)
   std::vector<double> elevations_angles{-0.1, 0.67};
   LidarEmitter emitter(LiDARConfig{360, elevations_angles});
 
-  // Stored parameters
   EXPECT_EQ(emitter.azimuth_steps(), 360);
   EXPECT_EQ(emitter.elevation_angles().size(), elevations_angles.size());
 
-  // Raw angles match
   for (size_t i = 0; i < elevations_angles.size(); ++i)
   {
     EXPECT_DOUBLE_EQ(emitter.elevation_angles()[i], elevations_angles[i]);
   }
 
-  // Precomputed trig values match
   const auto& cosines = emitter.elevation_cosines();
   const auto& sines = emitter.elevation_sines();
   for (size_t i = 0; i < elevations_angles.size(); ++i)

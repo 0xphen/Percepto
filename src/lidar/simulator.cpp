@@ -1,17 +1,17 @@
 #include <limits>
 #include <vector>
 
+#include "percepto/common/types.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
 #include "percepto/io/logger.h"
-#include "percepto/sensor/lidar_simulator.h"
-#include "percepto/types.h"
+#include "percepto/lidar/simulator.h"
 
-namespace percepto::sensor
+namespace percepto::lidar
 {
-using namespace percepto::sensor;
+using namespace percepto::lidar;
 
-std::vector<FrameScan> LidarSimulator::run_scan(int revs)
+std::vector<common::FrameScan> LidarSimulator::run_scan(int revs)
 {
   auto logger = get_percepto_logger();
 
@@ -24,12 +24,12 @@ std::vector<FrameScan> LidarSimulator::run_scan(int revs)
   float inf = std::numeric_limits<float>::infinity();
   Vec3 invalid{inf, inf, inf};
 
-  std::vector<FrameScan> scans;
+  std::vector<common::FrameScan> scans;
   scans.reserve(revs);
 
   for (int rev = 0; rev < revs; ++rev)
   {
-    FrameScan scan(N, M);
+    common::FrameScan scan(N, M);
     scan.azimuth_angles = le.azimuth_angles();
     scan.elevation_angles = le.elevation_angles();
 
@@ -63,4 +63,4 @@ std::vector<FrameScan> LidarSimulator::run_scan(int revs)
   return scans;
 }
 
-}  // namespace percepto::sensor
+}  // namespace percepto::lidar

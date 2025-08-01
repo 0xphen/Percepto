@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 
+#include <percepto/common/types.h>
 #include <percepto/core/ray.h>
 #include <percepto/core/vec3.h>
 #include <percepto/geometry/sphere.h>
-#include <percepto/types.h>
 #include "test_helpers.h"
 
 using percepto::core::Ray, percepto::geometry::Sphere, percepto::core::Vec3, percepto::core::Ray,
-    percepto::HitRecord;
+    percepto::common::HitRecord;
 using percepto::test::GeometryTestFixture;
 
 TEST_F(GeometryTestFixture, SphereTest_RaySphereIntersection)

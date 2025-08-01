@@ -3,13 +3,13 @@
 #include <variant>
 #include <vector>
 
+#include "percepto/common/types.h"
 #include "percepto/core/ray.h"
 #include "percepto/geometry/sphere.h"
 #include "percepto/geometry/triangle.h"
-#include "percepto/types.h"
 
 using percepto::geometry::Sphere, percepto::geometry::Triangle, percepto::core::Ray,
-    percepto::HitRecord;
+    percepto::common::HitRecord;
 
 namespace percepto::core
 {

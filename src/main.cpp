@@ -8,13 +8,13 @@
 #include <tuple>
 #include <vector>
 
-#include "percepto/core/config_loader.h"
+#include "percepto/common/config_loader.h"
 #include "percepto/core/scene.h"
 #include "percepto/geometry/triangle.h"
 #include "percepto/io/csv_parser.h"
 #include "percepto/io/logger.h"
-#include "percepto/sensor/lidar_emitter.h"
-#include "percepto/sensor/lidar_simulator.h"
+#include "percepto/lidar/emitter.h"
+#include "percepto/lidar/simulator.h"
 
 using namespace std;
 
@@ -67,10 +67,10 @@ int main(int argc, char** argv)
   // ----------------------------------------
   // ⚙️ Configuration Loading
   // ----------------------------------------
-  percepto::core::LiDARConfig lidar_cfg;
+  percepto::common::LiDARConfig lidar_cfg;
   try
   {
-    lidar_cfg = percepto::core::ConfigLoader::loadLiDARConfig();
+    lidar_cfg = percepto::common::ConfigLoader::loadLiDARConfig();
   }
   catch (const std::exception& e)
   {
@@ -84,8 +84,8 @@ int main(int argc, char** argv)
   // ----------------------------------------
   // 📡 LiDAR Setup & Simulation
   // ----------------------------------------
-  auto emitter = std::make_unique<percepto::sensor::LidarEmitter>(std::move(lidar_cfg));
-  percepto::sensor::LidarSimulator simulator(std::move(emitter), std::move(scene_ptr));
+  auto emitter = std::make_unique<percepto::lidar::LidarEmitter>(std::move(lidar_cfg));
+  percepto::lidar::LidarSimulator simulator(std::move(emitter), std::move(scene_ptr));
 
   auto scans = simulator.run_scan();
   logger->info("Scan complete");

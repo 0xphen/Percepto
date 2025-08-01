@@ -2,13 +2,13 @@
 
 #include <cmath>
 
+#include "percepto/common/types.h"
 #include "percepto/core/intersectable.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
 #include "percepto/math/math_utils.h"
-#include "percepto/types.h"
 
-using percepto::core::Vec3, percepto::core::Ray, percepto::HitRecord;
+using percepto::core::Vec3, percepto::core::Ray, percepto::common::HitRecord;
 using namespace percepto::math;
 
 namespace percepto::geometry

@@ -6,18 +6,18 @@
 #include <memory>
 #include <vector>
 
-#include "percepto/core/config_loader.h"
+#include "percepto/common/config_loader.h"
 #include "percepto/core/scene.h"
 #include "percepto/core/vec3.h"
+#include "percepto/lidar/emitter.h"
+#include "percepto/lidar/simulator.h"
 #include "percepto/math/intersection/moller_trumbore.h"
-#include "percepto/sensor/lidar_emitter.h"
-#include "percepto/sensor/lidar_simulator.h"
 #include "test_helpers.h"
 
-using percepto::core::Scene, percepto::core::LiDARConfig;
+using percepto::core::Scene, percepto::common::LiDARConfig;
 using percepto::core::Vec3, percepto::core::Ray, percepto::geometry::Triangle;
-using percepto::sensor::LidarEmitter;
-using percepto::sensor::LidarSimulator;
+using percepto::lidar::LidarEmitter;
+using percepto::lidar::LidarSimulator;
 
 static constexpr float inf = std::numeric_limits<float>::infinity();
 static const percepto::core::Vec3 invalid_point = percepto::core::Vec3(inf, inf, inf);

@@ -3,14 +3,14 @@
 #include <iostream>
 #include <toml++/toml.hpp>
 
-#include "percepto/core/config_loader.h"
+#include "percepto/common/config_loader.h"
 #include "percepto/io/logger.h"
 
-using percepto::core::ConfigLoader, percepto::core::LiDARConfig;
+using percepto::common::ConfigLoader, percepto::common::LiDARConfig;
 
 constexpr const char* DEFAULT_CONFIG = "config.toml";
 
-namespace percepto::core
+namespace percepto::common
 {
 // Helper function to find the config file, useful if executable isn't run from root
 std::string ConfigLoader::get_config_filepath()
@@ -83,4 +83,4 @@ LiDARConfig ConfigLoader::loadLiDARConfig()
 
   return config_data;
 }
-}  // namespace percepto::core
+}  // namespace percepto::common

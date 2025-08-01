@@ -2,11 +2,11 @@
 #include <string>
 #include <vector>
 
+#include "percepto/common/types.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/scene.h"
 #include "percepto/core/vec3.h"
 #include "percepto/geometry/triangle.h"
-#include "percepto/types.h"
 #include "test_helpers.h"
 
 using namespace percepto::core;

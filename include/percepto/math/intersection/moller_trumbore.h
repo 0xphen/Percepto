@@ -1,11 +1,12 @@
 #pragma once
 
 #include <optional>
+
+#include "percepto/common/types.h"
 #include "percepto/core/ray.h"
 #include "percepto/core/vec3.h"
-#include "percepto/types.h"
 
-using percepto::core::Ray, percepto::core::Vec3, percepto::TriangleHitResult;
+using percepto::core::Ray, percepto::core::Vec3, percepto::common::TriangleHitResult;
 
 namespace percepto::math::intersection
 {
