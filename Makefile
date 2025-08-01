@@ -11,7 +11,7 @@ build:
 configure:
 	@echo "⚙️ Configuring CMake..."
 	@mkdir -p $(BUILD_DIR)
-	@cd $(BUILD_DIR) && cmake ..
+	@cd $(BUILD_DIR) && cmake -DCMAKE_BUILD_TYPE=Debug .. 
 
 clean:
 	@echo "🧹 Cleaning build directory..."

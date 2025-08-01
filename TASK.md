@@ -19,7 +19,7 @@ This forms a solid MVP for custom scan simulation.
 
 A structured roadmap to scale Percepto into a production-grade tool:
 
-### 1. 🔹 Add Benchmarking (First)
+✅### 1. 🔹 Add Benchmarking (First)
 
 **Why:** Establish baseline performance metrics before optimizing.
 

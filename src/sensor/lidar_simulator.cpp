@@ -24,8 +24,6 @@ std::vector<FrameScan> LidarSimulator::run_scan(int revs)
   float inf = std::numeric_limits<float>::infinity();
   Vec3 invalid{inf, inf, inf};
 
-  le.reset();
-
   std::vector<FrameScan> scans;
   scans.reserve(revs);
 
@@ -40,7 +38,7 @@ std::vector<FrameScan> LidarSimulator::run_scan(int revs)
     {
       for (int j = 0; j < M; ++j)
       {
-        auto ray = le.next();
+        auto ray = le.get_ray(i, j);
 
         HitRecord rec;
         bool hit = sc.intersect(ray, rec);

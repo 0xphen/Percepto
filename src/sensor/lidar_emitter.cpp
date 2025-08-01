@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cmath>
+#include <stdexcept>
 #include <system_error>
 
 #include "percepto/core/config_loader.h"
@@ -13,10 +14,8 @@ using percepto::sensor::LidarEmitter;
 namespace percepto::sensor
 {
 LidarEmitter::LidarEmitter(percepto::core::LiDARConfig lidar_cfg)
-    : azimuth_steps_(lidar_cfg.azimuth_steps),
-      elevation_angles_(std::move(lidar_cfg.elevation_angles))
+    : elevation_angles_(std::move(lidar_cfg.elevation_angles))
 {
-  if (azimuth_steps_ <= 0) throw std::invalid_argument("azimuth_steps must be > 0");
   if (elevation_angles_.empty()) throw std::invalid_argument("elevation_angles cannot be empty");
 
   cos_elev_.reserve(elevation_angles_.size());
@@ -24,8 +23,8 @@ LidarEmitter::LidarEmitter(percepto::core::LiDARConfig lidar_cfg)
 
   for (const double& angle : elevation_angles_)
   {
-    cos_elev_.push_back(std::cos(angle));
-    sin_elev_.push_back(std::sin(angle));
+    cos_elev_.emplace_back(std::cos(angle));
+    sin_elev_.emplace_back(std::sin(angle));
   }
 
   // Precompute evenly spaced azimuth angles over a full 360° (2π radians)
@@ -33,36 +32,33 @@ LidarEmitter::LidarEmitter(percepto::core::LiDARConfig lidar_cfg)
   azimuth_angles_.reserve(lidar_cfg.azimuth_steps);
   for (int i = 0; i < lidar_cfg.azimuth_steps; i++)
   {
-    azimuth_angles_.push_back(2.0 * M_PI * double(i) / double(lidar_cfg.azimuth_steps));
+    azimuth_angles_.emplace_back(TWO_PI * double(i) / double(lidar_cfg.azimuth_steps));
   }
 }
 
-percepto::core::Ray LidarEmitter::next()
+percepto::core::Ray LidarEmitter::get_ray(const int i, const int j)
 {
-  double current_azimuth_angle = azimuth_angles_[current_azimuth_];
+  if (i < 0 || i >= azimuth_angles_.size())
+  {
+    throw std::out_of_range("Azimuth index 'i' out of bounds.");
+  }
+
+  if (j < 0 || j >= elevation_angles_.size())
+  {
+    throw std::out_of_range("Elevation index 'j' out of bounds.");
+  }
 
   // Pick precomputed cosφ, sinφ for this channel
-  double cos_el = cos_elev_[current_channel_];
-  double sin_el = sin_elev_[current_channel_];
+  double current_azimuth_angle = azimuth_angles_[i];
+  double cos_el = cos_elev_[j];
+  double sin_el = sin_elev_[j];
 
   // Spherical→Cartesian:
   //   x = cosφ·cosθ, y = cosφ·sinθ, z = sinφ
-  percepto::core::Vec3 dir{float(cos_el * std::cos(current_azimuth_angle)),
-                           float(cos_el * std::sin(current_azimuth_angle)), float(sin_el)};
+  percepto::core::Vec3 dir{cos_el * std::cos(current_azimuth_angle),
+                           cos_el * std::sin(current_azimuth_angle), sin_el};
 
-  auto ray = percepto::core::Ray{default_origin, dir};
-
-  // Advance channel first (inner loop)
-  if (++current_channel_ == int(elevation_angles_.size()))
-  {
-    current_channel_ = 0;
-    // Outer loop: advance azimuth once per channel‐cycle
-    if (++current_azimuth_ == azimuth_steps_)
-    {
-      current_azimuth_ = 0;
-    }
-  }
-
-  return ray;
+  return percepto::core::Ray{default_origin, dir};
 }
+
 }  // namespace percepto::sensor

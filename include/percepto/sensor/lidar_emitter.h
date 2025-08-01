@@ -20,15 +20,8 @@ class LidarEmitter
    */
   LidarEmitter(percepto::core::LiDARConfig lidar_cfg);
 
-  /// Start a new scan (reset both azimuth and channel indices).
-  void reset()
-  {
-    current_azimuth_ = 0;
-    current_channel_ = 0;
-  }
-
   /// Returns the number of azimuth steps this emitter was configured with.
-  int azimuth_steps() const { return azimuth_steps_; }
+  int azimuth_steps() const { return azimuth_angles_.size(); }
 
   const std::vector<double>& elevation_angles() const { return elevation_angles_; }
 
@@ -41,16 +34,22 @@ class LidarEmitter
   /// Emit the next ray; wraps around after one full revolution.
   percepto::core::Ray next();
 
+  /**
+   * @brief Generates a LiDAR ray for the given azimuth and elevation indices.
+   *
+   * @param i Azimuth index (0 to azimuth_steps - 1).
+   * @param j Elevation index (0 to elevation_steps - 1).
+   * @return The generated `percepto::core::Ray` from the sensor's origin.
+   */
+  percepto::core::Ray get_ray(const int i, const int j);
+
   const std::vector<double>& azimuth_angles() const { return azimuth_angles_; }
 
  private:
-  int azimuth_steps_;
-  int current_azimuth_ = 0;  ///< [0, azimuth_steps_)
-  int current_channel_ = 0;  ///< [0, channel_count)
   std::vector<double> elevation_angles_;
   std::vector<double> cos_elev_, sin_elev_;
   std::vector<double> azimuth_angles_;
-  static constexpr double two_pi = 2.0 * M_PI;
+  static constexpr double TWO_PI = 2.0 * M_PI;
   inline static const percepto::core::Vec3 default_origin{0.0, 0.0, 0.0};
 };
 

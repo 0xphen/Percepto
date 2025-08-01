@@ -21,11 +21,10 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/gabime/spdlog.git
   GIT_TAG        v1.13.0
 )
-FetchContent_Declare(
-  csv_parser
-  GIT_REPOSITORY https://github.com/vincentlaucsb/csv-parser.git
-  GIT_TAG        2.2.1
-)
+# FetchContent_Declare(
+#   csv_parser
+#   GIT_REPOSITORY https://github.com/vincentlaucsb/csv-parser.git
+# )
 FetchContent_Declare(
   CLI11
   GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
@@ -37,6 +36,8 @@ FetchContent_Declare(
   GIT_TAG v1.8.3
 )
 
+add_subdirectory(external/csv-parser)
+
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
 set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "" FORCE)
 
@@ -44,7 +45,6 @@ FetchContent_MakeAvailable(
   googletest
   tomlplusplus
   spdlog
-  csv_parser
   CLI11
   benchmark
 )
